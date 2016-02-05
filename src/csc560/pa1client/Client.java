@@ -1,58 +1,69 @@
 package csc560.pa1client;
-import java.net.*;
+
 import java.io.*;
-import java.util.Scanner;
-
-/**
- * Created by Andrew on 2/2/16.
- */
-public class Client {
-
-
-
-    public static void main(String[] args) {
-        // write your code here
-        ServerSocket server;
-        int reply;
-        Socket sock;
-        ObjectInputStream inputStream = null;
-        ObjectOutputStream outputStream = null;
-        boolean gameFinished = false;
-        String message = "";
+import java.net.*;
+public class Client{
+    Socket requestSocket;
+    ObjectOutputStream out;
+    ObjectInputStream in;
+    String message;
+    Client(){}
+    void run()
+    {
         try{
-
-                sock = new Socket("localhost", 7788);
-                do{
-
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.flush();
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-//                    outputStream.writeObject("Connection Successful");
-//                    outputStream.flush();
-////                    outputStream.writeBytes("Fuck you!");
-//                    System.out.println(inputStream.readByte());
-                    try{
-                        message = (String)inputStream.readObject();
-                        System.out.println("server>" + message);
-                        Scanner keyboard = new Scanner(System.in);
-                        //try to write a message to the client
-                        System.out.println("Enter message to send server: ");
-                        outputStream.writeObject(keyboard.next());
-//                        outputStream.writeObject("Test client");
-                        outputStream.flush();
-                        if (message.equals("bye"))
-                            outputStream.writeObject("bye");
-                        outputStream.flush();
-                    }
-                    catch(ClassNotFoundException classnot){
-                        System.err.println("Data received in unknown format");
-                    }
-                }while(!message.equalsIgnoreCase("bye"));
-
-
-        } catch (IOException e) {
-            System.out.println("IOException on socket listen: " + e);
+            //1. creating a socket to connect to the server
+            requestSocket = new Socket("localhost", 2004);
+            System.out.println("Connected to localhost in port 2004");
+            //2. get Input and Output streams
+            out = new ObjectOutputStream(requestSocket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(requestSocket.getInputStream());
+            //3: Communicating with the server
+            do{
+                try{
+                    message = (String)in.readObject();
+                    System.out.println("server>" + message);
+                    sendMessage("Hi my server");
+                    message = "bye";
+                    sendMessage(message);
+                }
+                catch(ClassNotFoundException classNot){
+                    System.err.println("data received in unknown format");
+                }
+            }while(!message.equals("bye"));
+        }
+        catch(UnknownHostException unknownHost){
+            System.err.println("You are trying to connect to an unknown host!");
+        }
+        catch(IOException ioException){
+            ioException.printStackTrace();
+        }
+        finally{
+            //4: Closing connection
+            try{
+                in.close();
+                out.close();
+                requestSocket.close();
+            }
+            catch(IOException ioException){
+                ioException.printStackTrace();
+            }
         }
     }
-
+    void sendMessage(String msg)
+    {
+        try{
+            out.writeObject(msg);
+            out.flush();
+            System.out.println("client>" + msg);
+        }
+        catch(IOException ioException){
+            ioException.printStackTrace();
+        }
+    }
+    public static void main(String args[])
+    {
+        Client client = new Client();
+        client.run();
+    }
 }
