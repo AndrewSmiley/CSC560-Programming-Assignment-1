@@ -3,15 +3,15 @@ package csc560.pa1server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.Arrays;
 
 //http://www.java2s.com/Tutorial/Java/0320__Network/TestnonblockingacceptusingServerSocketChannel.htm
 public class Server{
@@ -23,24 +23,46 @@ public class Server{
     int DEFAULTWEIGHT=5;
     int CLIENT_ID = 666;
     int SERVER_ID = 777;
+    int WIN_FLAG = 6969;
     Server(){}
 
     private class BoardSpace{
-        int row,column, weight;
+        int row,column, serverWeight, clientWeight;
 
         protected  BoardSpace() {
-            weight  = DEFAULTWEIGHT;
+            serverWeight = DEFAULTWEIGHT;
+            clientWeight = DEFAULTWEIGHT;
         }
         protected BoardSpace(int row, int column){
             this.row = row;
             this.column = column;
+            serverWeight = DEFAULTWEIGHT;
+            clientWeight = DEFAULTWEIGHT;
         }
 
-        protected BoardSpace(int row, int column, int weight){
-            this.row = row;
+//        public BoardSpace(int column, int row, int clientWeight) {
+//            this.clientWeight = clientWeight;
+//            this.serverWeight = DEFAULTWEIGHT;
+//            this.column = column;
+//            this.row = row;
+//        }
+//
+//
+//        protected BoardSpace(int row, int column, int serverWeight){
+//            this.row = row;
+//            this.column = column;
+//            this.serverWeight = serverWeight;
+//            this.clientWeight = DEFAULTWEIGHT;
+//        }
+
+        public BoardSpace(int clientWeight, int serverWeight, int column, int row) {
+            this.clientWeight = clientWeight;
+            this.serverWeight = serverWeight;
             this.column = column;
-            this.weight = weight;
+            this.row = row;
         }
+
+
         public int getRow() {
             return row;
         }
@@ -57,12 +79,20 @@ public class Server{
             this.column = column;
         }
 
-        public int getWeight() {
-            return weight;
+        public int getServerWeight() {
+            return serverWeight;
         }
 
-        public void setWeight(int weight) {
-            this.weight = weight;
+        public void setServerWeight(int weight) {
+            this.serverWeight = weight;
+        }
+
+        public int getClientWeight() {
+            return clientWeight;
+        }
+
+        public void setClientWeight(int clientWeight) {
+            this.clientWeight = clientWeight;
         }
     }
 
@@ -179,10 +209,59 @@ public class Server{
     }
     public static void main(String args[])
     {
+//        //ok let's test this
+//        Server s = new Server();
+//        int[][] board = s.buildNewBoard();
+////        board[0][0] = s.CLIENT_ID;
+////        board[0][2] = s.CLIENT_ID;
+//////        board[1][1] = s.SERVER_ID;
+////        board[2][0] = s.SERVER_ID;
+//        boolean serverTurn = true;
+//        Scanner scan= new Scanner(System.in);
+//        s.printBoard(board);
+//        while (s.generateGameState(board).size() > 0){
+//
+//            int player = (serverTurn)? s.SERVER_ID:s.CLIENT_ID;
+//            if (player == s.CLIENT_ID){
+//                System.out.print("Enter the row: ");
+//                int row= scan.nextInt();
+//                System.out.print("Enter the column: ");
+//                int column= scan.nextInt();
+//                board[row][column] = s.CLIENT_ID;
+//
+//            }else {
+//                int[][] tmpBoard = s.fuckYouJavaCopyBoard(board);
+//                BoardSpace space = s.minimax(player, board);
+//                board[space.row][space.column] = player;
+//            }
+//            serverTurn = !serverTurn;
+//            s.printBoard(board);
+//
+//        }
+
+
         Server server = new Server();
         while(true){
             server.run();
         }
+    }
+
+    void printBoard(int[][] board){
+        for (int i =0; i <3;i++){
+            String row = "";
+            for(int j = 0;j < 3; j++){
+                if (board[i][j] == 0){
+                    row = row+"| |";
+                }else if (board[i][j] == CLIENT_ID){
+                    row = row+"|O|";
+                }else if (board[i][j] == SERVER_ID){
+                    row = row+"|X|";
+                }
+
+            }
+            System.out.println(row+"\n\n");
+        }
+        System.out.println("\n\n");
     }
 
     int[][] buildNewBoard(){
@@ -212,8 +291,8 @@ public class Server{
         LinkedList<BoardSpace> results = new LinkedList<BoardSpace>();
         for(int i = 0; i < BOARD_ROWS; i++ ){
             for (int j = 0; j < BOARD_COLUMNS; j++){
-                if (board[i][j] == 0);
-                results.add(new BoardSpace(i, j));
+                if (board[i][j] == 0)
+                    results.add(new BoardSpace(i, j));
 
             }
         }
@@ -228,7 +307,7 @@ public class Server{
 
     int generateMoveValue(BoardSpace space, int[][] board, int player){
         // so here we want to determine how close we are to 3 in a row
-        int totalMoveWeight = DEFAULTWEIGHT;
+        int totalMoveWeight = 0;
         if(space.row == 1){
             // handle case if it's a middle row
             //check to see if we're working toward a vertical win
@@ -243,7 +322,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -253,7 +332,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -263,7 +342,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -274,7 +353,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -291,18 +370,18 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
 
                 //the vertical
                 tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-2][space.column ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
+                tmpWeight = (board[space.row+1][space.column ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -319,7 +398,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -330,7 +409,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -353,7 +432,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -364,7 +443,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -374,7 +453,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -388,7 +467,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -399,7 +478,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -408,12 +487,12 @@ public class Server{
             if(space.column==2){
                 int tmpWeight = DEFAULTWEIGHT;
                 //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
+                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
+                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -424,7 +503,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -435,7 +514,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -453,7 +532,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -464,7 +543,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -474,7 +553,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -488,7 +567,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -499,7 +578,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                 tmpWeight = DEFAULTWEIGHT;
@@ -513,7 +592,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -524,18 +603,18 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
 
                 //diagonal
-                tmpWeight = (board[space.row+1][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+2][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
+                tmpWeight = (board[space.row+1][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
+                tmpWeight = (board[space.row+2][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return tmpWeight;
+                    return WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -545,14 +624,53 @@ public class Server{
         return totalMoveWeight;
     }
 
+    int[][] fuckYouJavaCopyBoard(int[][] array){
+        int [][] tmp = buildNewBoard();
+        for (int i =0; i < BOARD_ROWS; i++){
+            for (int j = 0; j < BOARD_COLUMNS; j++){
+                tmp[i][j] = array[i][j];
+            }
+        }
+        return tmp;
+    }
     //this is actually our recursive algorithm
     BoardSpace minimax(int PLAYER, int[][] board){
         LinkedList<BoardSpace> possibleMoves = generateGameState(board);
+        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
+        //base case
+        if ( possibleMoves.size() == 1){
+            return possibleMoves.get(0);
+        }
         for(BoardSpace space : possibleMoves){
-            
+
+            int serverWeight = generateMoveValue(space, board, SERVER_ID);
+                if (serverWeight == WIN_FLAG){
+                    return space;
+                }
+
+            int clientWeight = generateMoveValue(space, board, CLIENT_ID);
+            //we want to block a win for the client
+            if (clientWeight== WIN_FLAG){
+                return space;
+            }
+
+
+
+            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+            tmpBoard[space.row][space.column] = PLAYER;
+            BoardSpace s = minimax(PLAYER, tmpBoard);
+            //check if after the game plays out, this is the overall best move
+            if (s.row == space.row && s.column == space.column){
+                calculatedMoves.add(space);
+            }else{
+                calculatedMoves.add(s);
+            }
+
         }
 
 
-        return new BoardSpace();
+
+
+        return calculatedMoves.get(0);
     }
 }
