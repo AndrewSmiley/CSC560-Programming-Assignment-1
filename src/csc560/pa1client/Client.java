@@ -71,18 +71,19 @@ public class Client{
             String initialMessage =readIncomingMessage(in);
             if (initialMessage.equalsIgnoreCase("NONE")){
                 processClientAction(board);
-//                BoardSpace space = getUserInput();
-//                board[space.row][space.column]= CLIENT_ID;
-//                sendMessage("MOVE "+space.row+" "+space.column);
+
             }else{
                 processMove(initialMessage, board,SERVER_ID);
+                processClientAction(board);
             }
             printBoard(board);
 
             //3: Communicating with the server
-            do{
+            while(true){
 
                     message = readIncomingMessage(in);
+                if (message.contains("WIN") || message.contains("LOSS") || message.contains("TIE")){break;}
+
                     processMove(message, board, SERVER_ID);
                     printBoard(board);
                     processClientAction(board);
@@ -91,7 +92,7 @@ public class Client{
 //                    message = "bye";
 //                    sendMessage(message);
 
-            }while(!message.contains("WIN") && !message.contains("LOSS") && !message.contains("TIE"));
+            }
         }
         catch(UnknownHostException unknownHost){
             System.err.println("You are trying to connect to an unknown host!");
@@ -218,6 +219,8 @@ public class Client{
      * @return
      */
     void processMove(String move, int[][] board, int player){
+        System.out.println(move);
+
         String[] tmp=move.split(" ");
         int  row = Integer.parseInt(tmp[1]);
         int column = Integer.parseInt(tmp[2]);

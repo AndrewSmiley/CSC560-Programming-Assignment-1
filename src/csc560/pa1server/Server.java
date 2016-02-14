@@ -109,6 +109,7 @@ public class Server{
 
             System.out.println("Waiting for connection");
             while (true) {
+
                 SocketChannel sc = null;
                 if (connections.size() == 0) {
                     //if we don't have any queued connections
@@ -131,10 +132,10 @@ public class Server{
                 Socket connection = sc.socket();
                 System.out.println("Connection received from " + connection.getInetAddress().getHostName());
                 Random rand = new Random();
-                int randomNum = rand.nextInt((10 - 1) + 1) + 1;
+                int randomNum = rand.nextInt((100 - 1) + 1) + 1;
                 //if it's an even number let the server move first, otherwise let the client go first
 //                boolean serverTurn= randomNum % 2 == 0;
-                boolean serverTurn = false;
+                boolean serverTurn = true;
                 //we want the inverse
                 boolean clientTurn = !serverTurn;
                 int[][] board  = buildNewBoard();
@@ -144,22 +145,26 @@ public class Server{
                 if(!serverTurn){
                     out.writeObject("NONE");
                     out.flush();
-//                    dos.writeDouble(value);
-
-//                    sendMessage("NONE");
                 }else{
                     executeServerMove(board);
                 }
                 in = new ObjectInputStream(connection.getInputStream());
-//                Thread.sleep(50000);
                 while (gameRunning){
+                    SocketChannel throwAway = ssc.accept();
+                    if (throwAway != null){
+                        connections.add(throwAway);
+                    }
 //                    ssc.configureBlocking(true);
                     //3. get Input and Output streams
 
 
 
-                    processMove((String) in.readObject(),board, CLIENT_ID );
-                    executeServerMove(board);
+                    if (processMove((String) in.readObject(),board, CLIENT_ID )){
+                        break;
+                    }
+                    if(executeServerMove(board)){
+                        break;
+                    }
 
 
 //                    sendMessage("Connection successful");
@@ -169,14 +174,11 @@ public class Server{
 
                     if (generateGameState(board).size() == 0) {
                         gameRunning = false;
-                        sendMessage("WIN");
+//                        sendMessage("MOVEWIN");
                     }
 //                    String message;
                     //check incoming connections
-                    SocketChannel throwAway = ssc.accept();
-                    if (throwAway != null){
-                        connections.add(throwAway);
-                    }
+
 //                    Thread.sleep(5000);
 //                    message = readIncomingMessage(in);
 
@@ -321,15 +323,24 @@ public class Server{
      * @param player
      * @return
      */
-    void processMove(String move, int[][] board, int player){
+    boolean processMove(String move, int[][] board, int player){
         String[] tmp=move.split(" ");
         int  row = Integer.parseInt(tmp[1]);
         int column = Integer.parseInt(tmp[2]);
+
         if(board[row][column] == 0){
             board[row][column] = player;
+            if (generateGameState(board).size() == 0){
+                sendMessage("MOVE "+row+" "+column+" WIN");
+                return true;
+            }else{
+                return false;
+            }
 
-        }else{
-            return;
+
+        }
+        else{
+            return false;
         }
     }
 
@@ -345,10 +356,17 @@ public class Server{
         }
         return results;
     }
-    void executeServerMove(int[][] board){
+    boolean executeServerMove(int[][] board){
         BoardSpace space = minimax(SERVER_ID, board);
         board[space.row][space.column] = SERVER_ID;
-        sendMessage("MOVE "+space.row+" "+space.column);
+        if(generateGameState(board).size() == 0){
+            sendMessage("MOVE "+space.row+" "+space.column+ " WIN");
+            return true;
+        }else{
+            sendMessage("MOVE "+space.row+" "+space.column);
+            return false;
+        }
+
     }
 
 

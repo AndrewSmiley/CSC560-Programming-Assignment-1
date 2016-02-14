@@ -26,11 +26,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Server.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Server.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.752907">
-              <caret line="190" column="34" selection-start-line="190" selection-start-column="34" selection-end-line="190" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="153" column="23" selection-start-line="153" selection-start-column="23" selection-end-line="153" selection-end-column="23" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1926#1927#0" expanded="true" />
@@ -50,20 +50,20 @@
                 <element signature="e#2521#2522#0" expanded="true" />
                 <element signature="e#2577#2578#0" expanded="true" />
                 <element signature="e#2858#2873#0" expanded="true" />
-                <element signature="e#9525#9526#0" expanded="true" />
-                <element signature="e#9561#9562#0" expanded="true" />
-                <element signature="e#10151#10163#0" expanded="true" />
-                <element signature="e#25424#25436#0" expanded="true" />
+                <element signature="e#9519#9520#0" expanded="true" />
+                <element signature="e#9555#9556#0" expanded="true" />
+                <element signature="e#10372#10384#0" expanded="true" />
+                <element signature="e#25848#25860#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.8125">
+              <caret line="90" column="29" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
               <folding>
                 <element signature="e#659#660#0" expanded="true" />
                 <element signature="e#693#694#0" expanded="true" />
@@ -73,8 +73,8 @@
                 <element signature="e#841#842#0" expanded="true" />
                 <element signature="e#886#887#0" expanded="true" />
                 <element signature="e#930#931#0" expanded="true" />
-                <element signature="e#5736#5737#0" expanded="true" />
-                <element signature="e#5772#5773#0" expanded="true" />
+                <element signature="e#5629#5630#0" expanded="true" />
+                <element signature="e#5665#5666#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -101,8 +101,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/csc560/pa1server/Main.java" />
-        <option value="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
         <option value="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
+        <option value="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
       </list>
     </option>
   </component>
@@ -655,12 +655,12 @@
       <workItem from="1454851444432" duration="460000" />
       <workItem from="1454967777323" duration="24000" />
       <workItem from="1454969123594" duration="23557000" />
-      <workItem from="1455389077173" duration="19206000" />
+      <workItem from="1455389077173" duration="21002000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="50305000" />
+    <option name="totallyTimeSpent" value="52101000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1129" extended-state="6" />
@@ -712,25 +712,25 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>183</line>
+          <line>185</line>
           <properties />
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1client/Client.java</url>
-          <line>84</line>
+          <line>83</line>
           <properties />
           <option name="timeStamp" value="11" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>199</line>
+          <line>201</line>
           <properties />
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>722</line>
+          <line>740</line>
           <properties />
           <option name="timeStamp" value="17" />
         </line-breakpoint>
@@ -742,19 +742,19 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>129</line>
+          <line>130</line>
           <properties />
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1client/Client.java</url>
-          <line>89</line>
+          <line>90</line>
           <properties />
           <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1client/Client.java</url>
-          <line>236</line>
+          <line>239</line>
           <properties />
           <option name="timeStamp" value="35" />
         </line-breakpoint>
@@ -794,10 +794,10 @@
             <element signature="e#2521#2522#0" expanded="true" />
             <element signature="e#2577#2578#0" expanded="true" />
             <element signature="e#2858#2873#0" expanded="true" />
-            <element signature="e#9525#9526#0" expanded="true" />
-            <element signature="e#9561#9562#0" expanded="true" />
-            <element signature="e#10151#10163#0" expanded="true" />
-            <element signature="e#25424#25436#0" expanded="true" />
+            <element signature="e#9519#9520#0" expanded="true" />
+            <element signature="e#9555#9556#0" expanded="true" />
+            <element signature="e#10372#10384#0" expanded="true" />
+            <element signature="e#25848#25860#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -815,8 +815,8 @@
             <element signature="e#841#842#0" expanded="true" />
             <element signature="e#886#887#0" expanded="true" />
             <element signature="e#930#931#0" expanded="true" />
-            <element signature="e#5736#5737#0" expanded="true" />
-            <element signature="e#5772#5773#0" expanded="true" />
+            <element signature="e#5629#5630#0" expanded="true" />
+            <element signature="e#5665#5666#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -844,10 +844,10 @@
             <element signature="e#2521#2522#0" expanded="true" />
             <element signature="e#2577#2578#0" expanded="true" />
             <element signature="e#2858#2873#0" expanded="true" />
-            <element signature="e#9525#9526#0" expanded="true" />
-            <element signature="e#9561#9562#0" expanded="true" />
-            <element signature="e#10151#10163#0" expanded="true" />
-            <element signature="e#25424#25436#0" expanded="true" />
+            <element signature="e#9519#9520#0" expanded="true" />
+            <element signature="e#9555#9556#0" expanded="true" />
+            <element signature="e#10372#10384#0" expanded="true" />
+            <element signature="e#25848#25860#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -865,8 +865,8 @@
             <element signature="e#841#842#0" expanded="true" />
             <element signature="e#886#887#0" expanded="true" />
             <element signature="e#930#931#0" expanded="true" />
-            <element signature="e#5736#5737#0" expanded="true" />
-            <element signature="e#5772#5773#0" expanded="true" />
+            <element signature="e#5629#5630#0" expanded="true" />
+            <element signature="e#5665#5666#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -894,10 +894,10 @@
             <element signature="e#2521#2522#0" expanded="true" />
             <element signature="e#2577#2578#0" expanded="true" />
             <element signature="e#2858#2873#0" expanded="true" />
-            <element signature="e#9525#9526#0" expanded="true" />
-            <element signature="e#9561#9562#0" expanded="true" />
-            <element signature="e#10151#10163#0" expanded="true" />
-            <element signature="e#25424#25436#0" expanded="true" />
+            <element signature="e#9519#9520#0" expanded="true" />
+            <element signature="e#9555#9556#0" expanded="true" />
+            <element signature="e#10372#10384#0" expanded="true" />
+            <element signature="e#25848#25860#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -915,8 +915,8 @@
             <element signature="e#841#842#0" expanded="true" />
             <element signature="e#886#887#0" expanded="true" />
             <element signature="e#930#931#0" expanded="true" />
-            <element signature="e#5736#5737#0" expanded="true" />
-            <element signature="e#5772#5773#0" expanded="true" />
+            <element signature="e#5629#5630#0" expanded="true" />
+            <element signature="e#5665#5666#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -944,10 +944,10 @@
             <element signature="e#2521#2522#0" expanded="true" />
             <element signature="e#2577#2578#0" expanded="true" />
             <element signature="e#2858#2873#0" expanded="true" />
-            <element signature="e#9525#9526#0" expanded="true" />
-            <element signature="e#9561#9562#0" expanded="true" />
-            <element signature="e#10151#10163#0" expanded="true" />
-            <element signature="e#25424#25436#0" expanded="true" />
+            <element signature="e#9519#9520#0" expanded="true" />
+            <element signature="e#9555#9556#0" expanded="true" />
+            <element signature="e#10372#10384#0" expanded="true" />
+            <element signature="e#25848#25860#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -965,8 +965,8 @@
             <element signature="e#841#842#0" expanded="true" />
             <element signature="e#886#887#0" expanded="true" />
             <element signature="e#930#931#0" expanded="true" />
-            <element signature="e#5736#5737#0" expanded="true" />
-            <element signature="e#5772#5773#0" expanded="true" />
+            <element signature="e#5629#5630#0" expanded="true" />
+            <element signature="e#5665#5666#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -994,10 +994,10 @@
             <element signature="e#2521#2522#0" expanded="true" />
             <element signature="e#2577#2578#0" expanded="true" />
             <element signature="e#2858#2873#0" expanded="true" />
-            <element signature="e#9525#9526#0" expanded="true" />
-            <element signature="e#9561#9562#0" expanded="true" />
-            <element signature="e#10151#10163#0" expanded="true" />
-            <element signature="e#25424#25436#0" expanded="true" />
+            <element signature="e#9519#9520#0" expanded="true" />
+            <element signature="e#9555#9556#0" expanded="true" />
+            <element signature="e#10372#10384#0" expanded="true" />
+            <element signature="e#25848#25860#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1015,35 +1015,16 @@
             <element signature="e#841#842#0" expanded="true" />
             <element signature="e#886#887#0" expanded="true" />
             <element signature="e#930#931#0" expanded="true" />
-            <element signature="e#5736#5737#0" expanded="true" />
-            <element signature="e#5772#5773#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
-          <folding>
-            <element signature="e#659#660#0" expanded="true" />
-            <element signature="e#693#694#0" expanded="true" />
-            <element signature="e#732#733#0" expanded="true" />
-            <element signature="e#770#771#0" expanded="true" />
-            <element signature="e#804#805#0" expanded="true" />
-            <element signature="e#841#842#0" expanded="true" />
-            <element signature="e#886#887#0" expanded="true" />
-            <element signature="e#930#931#0" expanded="true" />
-            <element signature="e#5736#5737#0" expanded="true" />
-            <element signature="e#5772#5773#0" expanded="true" />
+            <element signature="e#5629#5630#0" expanded="true" />
+            <element signature="e#5665#5666#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.752907">
-          <caret line="190" column="34" selection-start-line="190" selection-start-column="34" selection-end-line="190" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="153" column="23" selection-start-line="153" selection-start-column="23" selection-end-line="153" selection-end-column="23" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1926#1927#0" expanded="true" />
@@ -1063,10 +1044,29 @@
             <element signature="e#2521#2522#0" expanded="true" />
             <element signature="e#2577#2578#0" expanded="true" />
             <element signature="e#2858#2873#0" expanded="true" />
-            <element signature="e#9525#9526#0" expanded="true" />
-            <element signature="e#9561#9562#0" expanded="true" />
-            <element signature="e#10151#10163#0" expanded="true" />
-            <element signature="e#25424#25436#0" expanded="true" />
+            <element signature="e#9519#9520#0" expanded="true" />
+            <element signature="e#9555#9556#0" expanded="true" />
+            <element signature="e#10372#10384#0" expanded="true" />
+            <element signature="e#25848#25860#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8125">
+          <caret line="90" column="29" selection-start-line="90" selection-start-column="29" selection-end-line="90" selection-end-column="29" />
+          <folding>
+            <element signature="e#659#660#0" expanded="true" />
+            <element signature="e#693#694#0" expanded="true" />
+            <element signature="e#732#733#0" expanded="true" />
+            <element signature="e#770#771#0" expanded="true" />
+            <element signature="e#804#805#0" expanded="true" />
+            <element signature="e#841#842#0" expanded="true" />
+            <element signature="e#886#887#0" expanded="true" />
+            <element signature="e#930#931#0" expanded="true" />
+            <element signature="e#5629#5630#0" expanded="true" />
+            <element signature="e#5665#5666#0" expanded="true" />
           </folding>
         </state>
       </provider>
