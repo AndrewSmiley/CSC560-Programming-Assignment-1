@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Client{
     Socket requestSocket;
-    OutputStream out;
+    ObjectOutputStream out;
     ObjectInputStream in;
     String message;
     Client(){}
@@ -62,18 +62,22 @@ public class Client{
             }
 //            requestSocket.getInputStream()
             System.out.println("Connected to localhost in port 7788");
+            Thread.sleep(2000);
             //2. get Input and Output streams
-            out = requestSocket.getOutputStream();
-            in =  in = new ObjectInputStream(requestSocket.getInputStream());
+            out = new ObjectOutputStream(requestSocket.getOutputStream());
+            in = new ObjectInputStream(requestSocket.getInputStream());
             int[][] board = buildNewBoard();
             //send the initial message
-
-            if (readIncomingMessage(in).equalsIgnoreCase("NONE")){
+            String initialMessage =readIncomingMessage(in);
+            if (initialMessage.equalsIgnoreCase("NONE")){
                 processClientAction(board);
 //                BoardSpace space = getUserInput();
 //                board[space.row][space.column]= CLIENT_ID;
 //                sendMessage("MOVE "+space.row+" "+space.column);
+            }else{
+                processMove(initialMessage, board,SERVER_ID);
             }
+            printBoard(board);
 
             //3: Communicating with the server
             do{
@@ -87,13 +91,15 @@ public class Client{
 //                    message = "bye";
 //                    sendMessage(message);
 
-            }while(!message.contains("WIN") || !message.contains("LOSS") ||!message.contains("TIE"));
+            }while(!message.contains("WIN") && !message.contains("LOSS") && !message.contains("TIE"));
         }
         catch(UnknownHostException unknownHost){
             System.err.println("You are trying to connect to an unknown host!");
         }
         catch(IOException ioException){
             ioException.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally{
             //4: Closing connection
             try{
@@ -233,8 +239,13 @@ public class Client{
     }
     void sendMessage(String msg)
     {
-            PrintWriter writer = new PrintWriter(out);
-            writer.print(msg);
+
+        try {
+            out.writeObject(msg);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //            Writer writer = new BufferedWriter(out, "UTF-8");
 //            out.writeObject(msg);
 //            out.flush();

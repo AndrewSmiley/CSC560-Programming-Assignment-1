@@ -140,6 +140,7 @@ public class Server{
                 int[][] board  = buildNewBoard();
                 out = new ObjectOutputStream(connection.getOutputStream());
                 out.flush();
+
                 if(!serverTurn){
                     out.writeObject("NONE");
                     out.flush();
@@ -149,34 +150,39 @@ public class Server{
                 }else{
                     executeServerMove(board);
                 }
-                Thread.sleep(50000);
+                in = new ObjectInputStream(connection.getInputStream());
+//                Thread.sleep(50000);
                 while (gameRunning){
-                    ssc.configureBlocking(true);
+//                    ssc.configureBlocking(true);
                     //3. get Input and Output streams
-                    in = new ObjectInputStream(connection.getInputStream());
+
 
 
                     processMove((String) in.readObject(),board, CLIENT_ID );
                     executeServerMove(board);
 
 
-                    sendMessage("Connection successful");
+//                    sendMessage("Connection successful");
 
 
                     //4. The two parts communicate via the input and output streams
 
-                    gameRunning = false;
+                    if (generateGameState(board).size() == 0) {
+                        gameRunning = false;
+                        sendMessage("WIN");
+                    }
 //                    String message;
                     //check incoming connections
                     SocketChannel throwAway = ssc.accept();
                     if (throwAway != null){
                         connections.add(throwAway);
                     }
-                    Thread.sleep(5000);
+//                    Thread.sleep(5000);
 //                    message = readIncomingMessage(in);
 
 
                 }
+
 
             }
         }
@@ -238,12 +244,13 @@ public class Server{
 
     void sendMessage(String msg)
     {
-        PrintWriter writer = new PrintWriter(out);
-        writer.print(msg);
-//            Writer writer = new BufferedWriter(out, "UTF-8");
-//            out.writeObject(msg);
-//            out.flush();
-//            System.out.println("client>" + msg);
+        try {
+            out.writeObject(msg);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
     public static void main(String args[])
