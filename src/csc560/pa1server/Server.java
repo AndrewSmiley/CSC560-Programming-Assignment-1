@@ -1,11 +1,10 @@
 package csc560.pa1server;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
@@ -134,45 +133,48 @@ public class Server{
                 Random rand = new Random();
                 int randomNum = rand.nextInt((10 - 1) + 1) + 1;
                 //if it's an even number let the server move first, otherwise let the client go first
-                boolean serverTurn= randomNum % 2 == 0;
+//                boolean serverTurn= randomNum % 2 == 0;
+                boolean serverTurn = false;
                 //we want the inverse
                 boolean clientTurn = !serverTurn;
                 int[][] board  = buildNewBoard();
-
-                while (gameRunning){
-                    //3. get Input and Output streams
-                    out = new ObjectOutputStream(connection.getOutputStream());
+                out = new ObjectOutputStream(connection.getOutputStream());
+                out.flush();
+                if(!serverTurn){
+                    out.writeObject("NONE");
                     out.flush();
+//                    dos.writeDouble(value);
+
+//                    sendMessage("NONE");
+                }else{
+                    executeServerMove(board);
+                }
+                Thread.sleep(50000);
+                while (gameRunning){
+                    ssc.configureBlocking(true);
+                    //3. get Input and Output streams
                     in = new ObjectInputStream(connection.getInputStream());
 
-                    if (clientTurn){
-                        processMove((String)in.readObject(),board, CLIENT_ID );
-                        executeServerMove(board);
-                    }
+
+                    processMove((String) in.readObject(),board, CLIENT_ID );
+                    executeServerMove(board);
+
 
                     sendMessage("Connection successful");
 
 
                     //4. The two parts communicate via the input and output streams
 
-                        try{
-//                            gameRunning = false;
-                            String message;
-                            //check incoming connections
-                            SocketChannel throwAway = ssc.accept();
-                            if (throwAway != null){
-                                connections.add(throwAway);
-                            }
-                            Thread.sleep(5000);
-                            message = (String)in.readObject();
-                            System.out.println("client>" + message);
-                            if (message.equals("bye"))
-                                sendMessage("bye");
-                        }
-                        catch(ClassNotFoundException classnot){
-                            System.err.println("Data received in unknown format");
-                        }
-//                    }while(!message.equals("bye"));
+                    gameRunning = false;
+//                    String message;
+                    //check incoming connections
+                    SocketChannel throwAway = ssc.accept();
+                    if (throwAway != null){
+                        connections.add(throwAway);
+                    }
+                    Thread.sleep(5000);
+//                    message = readIncomingMessage(in);
+
 
                 }
 
@@ -196,16 +198,53 @@ public class Server{
             }
         }
     }
+
+    String readIncomingMessage(DataInputStream in){
+        byte[] messageByte = new byte[1000];
+        boolean end = false;
+        String dataString = "";
+        String messageString = "";
+
+        try
+        {
+//            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+            int bytesRead = 0;
+
+            messageByte[0] = in.readByte();
+            messageByte[1] = in.readByte();
+
+            int bytesToRead = messageByte[1];
+
+            while(!end)
+            {
+                bytesRead = in.read(messageByte);
+                messageString += new String(messageByte, 0, bytesRead);
+                if (messageString.length() == bytesToRead )
+                {
+                    end = true;
+                }
+            }
+            System.out.println("MESSAGE: " + messageString);
+            return dataString;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return messageString;
+    }
+
+
     void sendMessage(String msg)
     {
-        try{
-            out.writeObject(msg);
-            out.flush();
-//            System.out.println("server>" + msg);
-        }
-        catch(IOException ioException){
-            ioException.printStackTrace();
-        }
+        PrintWriter writer = new PrintWriter(out);
+        writer.print(msg);
+//            Writer writer = new BufferedWriter(out, "UTF-8");
+//            out.writeObject(msg);
+//            out.flush();
+//            System.out.println("client>" + msg);
+
     }
     public static void main(String args[])
     {
@@ -283,7 +322,8 @@ public class Server{
             board[row][column] = player;
 
         }else{
-            return;        }
+            return;
+        }
     }
 
     LinkedList<BoardSpace> generateGameState(int[][] board){
@@ -299,7 +339,9 @@ public class Server{
         return results;
     }
     void executeServerMove(int[][] board){
-
+        BoardSpace space = minimax(SERVER_ID, board);
+        board[space.row][space.column] = SERVER_ID;
+        sendMessage("MOVE "+space.row+" "+space.column);
     }
 
 
