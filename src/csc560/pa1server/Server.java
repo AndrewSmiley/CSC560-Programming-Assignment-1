@@ -4,13 +4,11 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Scanner;
-import java.util.Arrays;
 
 //http://www.java2s.com/Tutorial/Java/0320__Network/TestnonblockingacceptusingServerSocketChannel.htm
 public class Server{
@@ -22,11 +20,14 @@ public class Server{
     int DEFAULTWEIGHT=5;
     int CLIENT_ID = 666;
     int SERVER_ID = 777;
-    int WIN_FLAG = 6969;
+    int CLIENT_WIN_FLAG=CLIENT_ID;
+    int SERVER_WIN_FLAG=SERVER_ID;
+    int TIE_FLAG = CLIENT_ID+SERVER_ID;
+    int MINIMAX_WIN_FLAG = 6969;
     Server(){}
 
     private class BoardSpace{
-        int row,column, serverWeight, clientWeight;
+        int row,column, serverWeight, clientWeight,owner;
 
         protected  BoardSpace() {
             serverWeight = DEFAULTWEIGHT;
@@ -61,6 +62,12 @@ public class Server{
             this.row = row;
         }
 
+        public BoardSpace(int row, int column, int owner) {
+            this.row = row;
+            this.column = column;
+            this.owner = owner;
+        }
+
 
         public int getRow() {
             return row;
@@ -92,6 +99,18 @@ public class Server{
 
         public void setClientWeight(int clientWeight) {
             this.clientWeight = clientWeight;
+        }
+
+        public int getOwner() {
+            return owner;
+        }
+
+        public void setOwner(int owner) {
+            this.owner = owner;
+        }
+
+        public int getAbsolutePostion(){
+            return (row*3)+column;
         }
     }
 
@@ -206,6 +225,72 @@ public class Server{
             }
         }
     }
+
+    ArrayList<BoardSpace> boardArrayToArrayList(int[][] board){
+        ArrayList<BoardSpace> b = new ArrayList<BoardSpace>();
+        for(int i = 0; i < BOARD_ROWS; i++){
+            for(int j = 0; j < BOARD_COLUMNS; j++) {
+                b.add(new BoardSpace(i, j, board[i][j]));
+            }
+        }
+
+        return b;
+    }
+    int determineWinner(int[][] board){
+        ArrayList<BoardSpace> boardSpace = boardArrayToArrayList(board);
+        //the rows
+        int totalScore = 0;
+        for(int i = 0; i < BOARD_COLUMNS*BOARD_ROWS-1; i = i+BOARD_ROWS){
+
+            if (i < BOARD_ROWS){
+                //now the columns
+                for(int j = i; j < BOARD_ROWS; j++){
+
+                    for(int k = 0; k < BOARD_ROWS; i++){
+                        totalScore = totalScore + boardSpace.get(k+(k*BOARD_ROWS)).getOwner();
+
+                    }
+                    if (totalScore == boardSpace.get(i+j).getOwner()*BOARD_ROWS){
+                      return boardSpace.get(i+j).getOwner();
+                    }
+                }
+                totalScore=0;
+
+
+            }
+
+            //now whether we have a winner in the row
+            for(int j = 0; j < i+BOARD_ROWS; j++){
+                totalScore  = totalScore+boardSpace.get(i+j).getOwner();
+
+            }
+
+            if (totalScore == boardSpace.get(i).getOwner()*BOARD_ROWS){
+                return boardSpace.get(i).getOwner();
+            }
+
+            totalScore = 0;
+
+
+        }
+
+        for(int i = 0; i < BOARD_ROWS; i = i +BOARD_ROWS+1){
+
+        }
+
+//        for(int[] row : board){
+//
+//        }
+
+
+        return TIE_FLAG;
+    }
+
+    String getEndGameMessageAction(int inner){
+        return "";
+    }
+
+
 
     String readIncomingMessage(DataInputStream in){
         byte[] messageByte = new byte[1000];
@@ -389,7 +474,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -399,7 +484,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -409,7 +494,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -420,7 +505,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -437,7 +522,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -448,7 +533,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -465,7 +550,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -476,7 +561,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -499,7 +584,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -510,7 +595,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -520,7 +605,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -534,7 +619,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -545,7 +630,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -559,7 +644,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -570,7 +655,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -581,7 +666,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -599,7 +684,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -610,7 +695,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -620,7 +705,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -634,7 +719,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -645,7 +730,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                 tmpWeight = DEFAULTWEIGHT;
@@ -659,7 +744,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -670,7 +755,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -681,7 +766,7 @@ public class Server{
 
                 //if return if the move would give us a win
                 if(tmpWeight == DEFAULTWEIGHT*3)
-                    return WIN_FLAG;
+                    return MINIMAX_WIN_FLAG;
                 else
                     totalMoveWeight += tmpWeight;
                     tmpWeight = DEFAULTWEIGHT;
@@ -711,13 +796,13 @@ public class Server{
         for(BoardSpace space : possibleMoves){
 
             int serverWeight = generateMoveValue(space, board, SERVER_ID);
-                if (serverWeight == WIN_FLAG){
+                if (serverWeight == MINIMAX_WIN_FLAG){
                     return space;
                 }
 
             int clientWeight = generateMoveValue(space, board, CLIENT_ID);
             //we want to block a win for the client
-            if (clientWeight== WIN_FLAG){
+            if (clientWeight== MINIMAX_WIN_FLAG){
                 return space;
             }
 
