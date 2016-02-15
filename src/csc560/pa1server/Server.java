@@ -15,15 +15,16 @@ public class Server{
     ServerSocket providerSocket;
     ObjectOutputStream out;
     ObjectInputStream in;
-    int BOARD_ROWS = 3;
-    int BOARD_COLUMNS = 3;
-    int DEFAULTWEIGHT=5;
-    int CLIENT_ID = 666;
-    int SERVER_ID = 777;
-    int CLIENT_WIN_FLAG=CLIENT_ID;
-    int SERVER_WIN_FLAG=SERVER_ID;
-    int TIE_FLAG = CLIENT_ID+SERVER_ID;
-    int MINIMAX_WIN_FLAG = 6969;
+    final int BOARD_ROWS = 3;
+    final int BOARD_COLUMNS = 3;
+    final int DEFAULTWEIGHT=5;
+    final int CLIENT_ID = 666;
+    final int SERVER_ID = 777;
+    final int CLIENT_WIN_FLAG=CLIENT_ID;
+    final int SERVER_WIN_FLAG=SERVER_ID;
+    final int TIE_FLAG = CLIENT_ID+SERVER_ID;
+    final int MINIMAX_WIN_FLAG = 6969;
+    final int EMPTY_ROW = 123456;
     Server(){}
 
     private class BoardSpace{
@@ -162,8 +163,9 @@ public class Server{
                 out.flush();
 
                 if(!serverTurn){
-                    out.writeObject("NONE");
-                    out.flush();
+                    sendMessage("NONE");
+//                    out.writeObject("NONE");
+//                    out.flush();
                 }else{
                     executeServerMove(board);
                 }
@@ -207,12 +209,9 @@ public class Server{
 
             }
         }
-        catch(IOException ioException){
+        catch(Exception ioException){
             ioException.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+
         } finally{
             //4: Closing connection
             try{
@@ -238,6 +237,9 @@ public class Server{
     }
     int determineWinner(int[][] board){
         ArrayList<BoardSpace> boardSpace = boardArrayToArrayList(board);
+//        if(generateGameState(board).size() != 0){
+//            return EMPTY_ROW;
+//        }
         //the rows
         int totalScore = 0;
         for(int i = 0; i < BOARD_COLUMNS*BOARD_ROWS-1; i = i+BOARD_ROWS){
@@ -246,11 +248,11 @@ public class Server{
                 //now the columns
                 for(int j = i; j < BOARD_ROWS; j++){
 
-                    for(int k = 0; k < BOARD_ROWS; i++){
+                    for(int k = 0; k < BOARD_ROWS; k++){
                         totalScore = totalScore + boardSpace.get(k+(k*BOARD_ROWS)).getOwner();
 
                     }
-                    if (totalScore == boardSpace.get(i+j).getOwner()*BOARD_ROWS){
+                    if (totalScore == boardSpace.get(i+j).getOwner()*BOARD_ROWS &&  totalScore != 0){
                       return boardSpace.get(i+j).getOwner();
                     }
                 }
@@ -260,12 +262,13 @@ public class Server{
             }
 
             //now whether we have a winner in the row
-            for(int j = 0; j < i+BOARD_ROWS; j++){
+            for(int j = 0; j < BOARD_ROWS; j++){
+                System.out.println("Getting cell value for row at : "+(j+i));
                 totalScore  = totalScore+boardSpace.get(i+j).getOwner();
 
             }
 
-            if (totalScore == boardSpace.get(i).getOwner()*BOARD_ROWS){
+            if (totalScore == boardSpace.get(i).getOwner()*BOARD_ROWS && totalScore != 0){
                 return boardSpace.get(i).getOwner();
             }
 
@@ -273,20 +276,49 @@ public class Server{
 
 
         }
-
+        //here's the diagonal
+        totalScore = 0;
         for(int i = 0; i < BOARD_ROWS; i = i +BOARD_ROWS+1){
-
+            System.out.println("Getting cell value for diagonal at : "+(i));
+            totalScore = totalScore+boardSpace.get(i).getOwner();
         }
+
+        if (totalScore == boardSpace.get(0).getOwner()*BOARD_ROWS && totalScore != 0){
+
+            return boardSpace.get(0).getOwner();
+        }
+
+        //the other diagonal
+        totalScore = 0;
+        for(int i = 2; i < BOARD_ROWS; i = i +BOARD_ROWS-1){
+            System.out.println("Getting cell value for diagonal at : "+(i));
+            totalScore = totalScore+boardSpace.get(i).getOwner();
+        }
+        if (totalScore == boardSpace.get(2).getOwner()*BOARD_ROWS && totalScore != 0){
+            return boardSpace.get(0).getOwner();
+        }
+
+
 
 //        for(int[] row : board){
 //
 //        }
 
 
-        return TIE_FLAG;
+        return generateGameState(board).size() == 0? TIE_FLAG: EMPTY_ROW;
     }
 
-    String getEndGameMessageAction(int inner){
+    String getEndGameMessageAction(int winner){
+        switch (winner){
+            case CLIENT_WIN_FLAG:
+                return "WIN";
+            case SERVER_WIN_FLAG:
+                return "LOSS";
+            case TIE_FLAG:
+                return "TIE";
+
+        }
+
         return "";
     }
 
@@ -332,6 +364,7 @@ public class Server{
     void sendMessage(String msg)
     {
         try {
+            System.out.println(msg);
             out.writeObject(msg);
             out.flush();
         } catch (IOException e) {
@@ -415,8 +448,9 @@ public class Server{
 
         if(board[row][column] == 0){
             board[row][column] = player;
-            if (generateGameState(board).size() == 0){
-                sendMessage("MOVE "+row+" "+column+" WIN");
+
+            if (generateGameState(board).size() == 0|| determineWinner(board) != EMPTY_ROW ){
+                sendMessage("MOVE "+row+" "+column+" "+getEndGameMessageAction(determineWinner(board)));
                 return true;
             }else{
                 return false;
@@ -444,8 +478,8 @@ public class Server{
     boolean executeServerMove(int[][] board){
         BoardSpace space = minimax(SERVER_ID, board);
         board[space.row][space.column] = SERVER_ID;
-        if(generateGameState(board).size() == 0){
-            sendMessage("MOVE "+space.row+" "+space.column+ " WIN");
+        if(generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW ){
+            sendMessage("MOVE "+space.row+" "+space.column+" "+getEndGameMessageAction(determineWinner(board)));
             return true;
         }else{
             sendMessage("MOVE "+space.row+" "+space.column);

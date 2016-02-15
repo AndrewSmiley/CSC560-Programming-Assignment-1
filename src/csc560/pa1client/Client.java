@@ -74,6 +74,7 @@ public class Client{
 
             }else{
                 processMove(initialMessage, board,SERVER_ID);
+                printBoard(board);
                 processClientAction(board);
             }
             printBoard(board);
