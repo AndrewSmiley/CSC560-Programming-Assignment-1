@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da5941cb-227b-4b72-a78b-3c3a24fe7a1a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/csc560/pa1client/Client.java" afterPath="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/csc560/pa1server/Server.java" afterPath="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
     </list>
     <ignored path="CSC-Programming-Assignment-1-Server.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Server.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Server.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.4921384">
-              <caret line="297" column="48" selection-start-line="297" selection-start-column="48" selection-end-line="297" selection-end-column="48" />
+            <state vertical-scroll-proportion="-10.62963">
+              <caret line="284" column="0" selection-start-line="284" selection-start-column="0" selection-end-line="284" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2252#2253#0" expanded="true" />
@@ -55,19 +55,19 @@
                 <element signature="e#3099#3100#0" expanded="true" />
                 <element signature="e#3144#3145#0" expanded="true" />
                 <element signature="e#3425#3440#0" expanded="true" />
-                <element signature="e#12955#12956#0" expanded="true" />
-                <element signature="e#12991#12992#0" expanded="true" />
-                <element signature="e#13893#13905#0" expanded="true" />
+                <element signature="e#12961#12962#0" expanded="true" />
+                <element signature="e#12997#12998#0" expanded="true" />
+                <element signature="e#13899#13911#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="257" column="31" selection-start-line="257" selection-start-column="31" selection-end-line="257" selection-end-column="31" />
+            <state vertical-scroll-proportion="0.49170437">
+              <caret line="245" column="36" selection-start-line="245" selection-start-column="36" selection-end-line="245" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1754#1763#0" expanded="true" />
@@ -100,8 +100,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/csc560/pa1server/Main.java" />
-        <option value="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
         <option value="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
+        <option value="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
       </list>
     </option>
   </component>
@@ -665,12 +665,12 @@
       <workItem from="1454967777323" duration="24000" />
       <workItem from="1454969123594" duration="23557000" />
       <workItem from="1455389077173" duration="24923000" />
-      <workItem from="1455483023492" duration="23787000" />
+      <workItem from="1455483023492" duration="24498000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="79809000" />
+    <option name="totallyTimeSpent" value="80520000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1091" extended-state="6" />
@@ -743,25 +743,25 @@
           <properties />
           <option name="timeStamp" value="30" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
           <line>451</line>
           <properties />
           <option name="timeStamp" value="36" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
           <line>150</line>
           <properties />
           <option name="timeStamp" value="38" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
           <line>183</line>
           <properties />
           <option name="timeStamp" value="41" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
           <line>186</line>
           <properties />
@@ -777,7 +777,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="49" />
+      <option name="time" value="51" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -815,9 +815,9 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -865,9 +865,9 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -915,9 +915,9 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -965,9 +965,9 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1015,9 +1015,9 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1065,9 +1065,9 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1086,24 +1086,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="257" column="31" selection-start-line="257" selection-start-column="31" selection-end-line="257" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1754#1763#0" expanded="true" />
-            <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="true" />
-            <element signature="e#6332#6333#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.4921384">
-          <caret line="297" column="48" selection-start-line="297" selection-start-column="48" selection-end-line="297" selection-end-column="48" />
+        <state vertical-scroll-proportion="-10.62963">
+          <caret line="284" column="0" selection-start-line="284" selection-start-column="0" selection-end-line="284" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2252#2253#0" expanded="true" />
@@ -1129,9 +1115,23 @@
             <element signature="e#3099#3100#0" expanded="true" />
             <element signature="e#3144#3145#0" expanded="true" />
             <element signature="e#3425#3440#0" expanded="true" />
-            <element signature="e#12955#12956#0" expanded="true" />
-            <element signature="e#12991#12992#0" expanded="true" />
-            <element signature="e#13893#13905#0" expanded="true" />
+            <element signature="e#12961#12962#0" expanded="true" />
+            <element signature="e#12997#12998#0" expanded="true" />
+            <element signature="e#13899#13911#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49170437">
+          <caret line="245" column="36" selection-start-line="245" selection-start-column="36" selection-end-line="245" selection-end-column="36" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1754#1763#0" expanded="true" />
+            <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
+            <element signature="e#6288#6289#0" expanded="true" />
+            <element signature="e#6332#6333#0" expanded="true" />
           </folding>
         </state>
       </provider>

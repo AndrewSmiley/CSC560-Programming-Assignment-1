@@ -278,7 +278,7 @@ public class Server{
         }
         //here's the diagonal
         totalScore = 0;
-        for(int i = 0; i < BOARD_ROWS; i = i +BOARD_ROWS+1){
+        for(int i = 0; i < BOARD_ROWS*3; i = i +BOARD_ROWS+1){
             System.out.println("Getting cell value for diagonal at : "+(i));
             totalScore = totalScore+boardSpace.get(i).getOwner();
         }
@@ -290,12 +290,12 @@ public class Server{
 
         //the other diagonal
         totalScore = 0;
-        for(int i = 2; i < BOARD_ROWS; i = i +BOARD_ROWS-1){
+        for(int i = 2; i < BOARD_ROWS*2+1; i = i +BOARD_ROWS-1){
             System.out.println("Getting cell value for diagonal at : "+(i));
             totalScore = totalScore+boardSpace.get(i).getOwner();
         }
         if (totalScore == boardSpace.get(2).getOwner()*BOARD_ROWS && totalScore != 0){
-            return boardSpace.get(0).getOwner();
+            return boardSpace.get(2).getOwner();
         }
 
 
