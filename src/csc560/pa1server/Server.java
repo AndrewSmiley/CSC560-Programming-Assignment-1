@@ -7,10 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 //http://www.java2s.com/Tutorial/Java/0320__Network/TestnonblockingacceptusingServerSocketChannel.htm
 public class Server{
@@ -164,8 +161,8 @@ public class Server{
                 Random rand = new Random();
                 int randomNum = rand.nextInt((100 - 1) + 1) + 1;
                 //if it's an even number let the server move first, otherwise let the client go first
-//                boolean serverTurn= randomNum % 2 == 0;
-                boolean serverTurn = true;
+                boolean serverTurn= randomNum % 2 == 0;
+//                boolean serverTurn = true;
                 //we want the inverse
                 boolean clientTurn = !serverTurn;
                 int[][] board  = buildNewBoard();
@@ -177,6 +174,15 @@ public class Server{
 //                    out.writeObject("NONE");
 //                    out.flush();
                 }else{
+//                    board[0][0] = SERVER_ID;
+//                    if(generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW ){
+//                        sendMessage("MOVE "+0+" "+0+" "+getEndGameMessageAction(determineWinner(board)));
+////                        return true;
+//                    }else{
+//                        sendMessage("MOVE "+0+" "+0);
+////                        return false;
+//                    }
+
                     executeServerMove(board);
                 }
                 in = new ObjectInputStream(connection.getInputStream());
@@ -274,7 +280,7 @@ public class Server{
 
             //now whether we have a winner in the row
             for(int j = 0; j < BOARD_ROWS; j++){
-                System.out.println("Getting cell value for row at : "+(j+i));
+//                System.out.println("Getting cell value for row at : "+(j+i));
                 totalScore  = totalScore+boardSpace.get(i+j).getOwner();
 
             }
@@ -290,7 +296,7 @@ public class Server{
         //here's the diagonal
         totalScore = 0;
         for(int i = 0; i < BOARD_ROWS*3; i = i +BOARD_ROWS+1){
-            System.out.println("Getting cell value for diagonal at : "+(i));
+//            System.out.println("Getting cell value for diagonal at : "+(i));
             totalScore = totalScore+boardSpace.get(i).getOwner();
         }
 
@@ -302,7 +308,7 @@ public class Server{
         //the other diagonal
         totalScore = 0;
         for(int i = 2; i < BOARD_ROWS*2+1; i = i +BOARD_ROWS-1){
-            System.out.println("Getting cell value for diagonal at : "+(i));
+//            System.out.println("Getting cell value for diagonal at : "+(i));
             totalScore = totalScore+boardSpace.get(i).getOwner();
         }
         if (totalScore == boardSpace.get(2).getOwner()*BOARD_ROWS && totalScore != 0){
@@ -554,9 +560,9 @@ public class Server{
         }
     }
 
-    LinkedList<BoardSpace> generateGameState(int[][] board){
+    ArrayList<BoardSpace> generateGameState(int[][] board){
         //fuck the java 8 standard
-        LinkedList<BoardSpace> results = new LinkedList<BoardSpace>();
+        ArrayList<BoardSpace> results = new ArrayList<BoardSpace>();
         for(int i = 0; i < BOARD_ROWS; i++ ){
             for (int j = 0; j < BOARD_COLUMNS; j++){
                 if (board[i][j] == 0)
@@ -592,7 +598,8 @@ public class Server{
 //
 //    }
     boolean executeServerMove(int[][] board){
-        BoardSpace space = minimax(SERVER_ID, board);
+        BoardSpace space = minimax(0,SERVER_ID, board);
+        System.out.println("Chose move with value: "+space.getTotalScore());
         board[space.row][space.column] = SERVER_ID;
         if(generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW ){
             sendMessage("MOVE "+space.row+" "+space.column+" "+getEndGameMessageAction(determineWinner(board)));
@@ -1263,63 +1270,144 @@ public class Server{
             return CLIENT_ID;
         }
     }
-    BoardSpace minimaxRecursive(int player, int[][] board){
-        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
-        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
-        if(possibleMoves.size() == 1){
-            if(player == CLIENT_ID){
-                possibleMoves.get(0).setClientWeight(generateMoveValue(possibleMoves.get(0), board, player));
+//    BoardSpace minimaxRecursive(int player, int[][] board){
+////        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
+//        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
+//        if(possibleMoves.size() == 1){
+//            if(player == CLIENT_ID){
+//                possibleMoves.get(0).setClientWeight(generateMoveValue(possibleMoves.get(0), board, player));
+//            }else{
+//                possibleMoves.get(0).setServerWeight(generateMoveValue(possibleMoves.get(0), board, player));
+//            }
+//
+//            return possibleMoves.get(0);
+//        }
+//        for (BoardSpace space : possibleMoves){
+//            int score = generateMoveValue(space,board,player);
+//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+//            tmpBoard[space.row][space.column] = player;
+//            BoardSpace s = minimaxRecursive(getOppositePlayer(player), tmpBoard);
+//            if(player == CLIENT_ID){
+//                s.setClientWeight(score);
+//            }else{
+//                s.setServerWeight(score);
+//            }
+//            if (score==MINIMAX_WIN_FLAG){
+//                return s;
+//            }
+//
+//        }
+//        return new BoardSpace();
+//    }
+
+//    int fuck(int depth, int player, int[][]board){
+//        depth++;
+//        ArrayList<BoardSpace> possibleMoves = generateGameState(board);
+//        //base case
+//        if (possibleMoves.size() == 1) {
+//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+//            tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
+//            int winner = determineWinner(tmpBoard);
+//            if(winner == player) {
+//                possibleMoves.get(0).setTotalScore(10-depth);
+////                return possibleMoves.get(0);
+//                return (10-depth);
+//            }else if (winner == getOppositePlayer(player)){
+////                possibleMoves.get(0).setTotalScore((depth-10));
+////                return possibleMoves.get(0);
+//                return (depth-10);
+//            }else{
+//
+////                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
+////                possibleMoves.get(0).setTotalScore(0);
+////                return possibleMoves.get(0);
+//                return 0;
+//// .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
+//            }
+//
+//
+//
+//        }else{
+//        ArrayList<Integer> calculatedMoves = new ArrayList<Integer>();
+//        for (BoardSpace space: possibleMoves) {
+//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+//            tmpBoard[space.row][space.column] = player;
+//            calculatedMoves.add(fuck(depth, getOppositePlayer(player), tmpBoard));
+//        }
+//        }
+//
+//
+//    }
+    BoardSpace minimax(int depth, int player, int[][] board) {
+        depth++;
+        ArrayList<BoardSpace> possibleMoves = generateGameState(board);
+        //base case
+        if (possibleMoves.size() == 1) {
+            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+            tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
+            int winner = determineWinner(tmpBoard);
+            if(winner == player) {
+                possibleMoves.get(0).setTotalScore(10-depth);
+                return possibleMoves.get(0);
+            }else if (winner == getOppositePlayer(player)){
+                possibleMoves.get(0).setTotalScore((depth-10));
+                return possibleMoves.get(0);
             }else{
-                possibleMoves.get(0).setServerWeight(generateMoveValue(possibleMoves.get(0), board, player));
+
+//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
+                possibleMoves.get(0).setTotalScore(0);
+                return possibleMoves.get(0);
+// .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
             }
 
-            return possibleMoves.get(0);
+
         }
-        for (BoardSpace space : possibleMoves){
-            int score = generateMoveValue(space,board,player);
+        ArrayList<BoardSpace> calculatedMoves = new ArrayList<BoardSpace>();
+        for (BoardSpace space: possibleMoves) {
             int[][] tmpBoard = fuckYouJavaCopyBoard(board);
             tmpBoard[space.row][space.column] = player;
-            BoardSpace s = minimaxRecursive(getOppositePlayer(player), tmpBoard);
-            if(player == CLIENT_ID){
-                s.setClientWeight(score);
-            }else{
-                s.setServerWeight(score);
-            }
-            if (score==MINIMAX_WIN_FLAG){
-                return s;
-            }
-
+            calculatedMoves.add(minimax(depth, getOppositePlayer(player), tmpBoard));
         }
-        return new BoardSpace();
-    }
-    BoardSpace minimax(int player, int[][] board){
-        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
-        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
-      for (BoardSpace space : possibleMoves){
-            calculatedMoves.add(minimaxRecursive(player, board));
-      }
-
-
-        LinkedList<BoardSpace> clientMoves = calculatedMoves;
-        LinkedList<BoardSpace> serverMoves= calculatedMoves;
-
-        serverMoves.sort(new Comparator<BoardSpace>() {
+        Collections.sort(calculatedMoves,new Comparator<BoardSpace>() {
                              @Override
                              public int compare(BoardSpace o1, BoardSpace o2) {
-                                 return new Integer(o1.getServerWeight()).compareTo(new Integer(o2.getServerWeight()));
+
+                                 return new Integer(o2.getTotalScore()).compareTo(new Integer(o1.getTotalScore()));
                              }
                          });
-        clientMoves.sort(new Comparator<BoardSpace>() {
-            @Override
-            public int compare(BoardSpace o1, BoardSpace o2) {
-                return new Integer(o1.getClientWeight()).compareTo(new Integer(o2.getClientWeight()));
-            }
-        });
-        if(clientMoves.get(0).getClientWeight() > MINIMAX_WIN_FLAG){
-            return clientMoves.get(0);
-        }else{
-            return serverMoves.get(0);
-        }
+
+//        return calculatedMoves.get(calculatedMoves.size()-1);
+        return calculatedMoves.get(0);
+
+//        return new BoardSpace();
+    }
+//        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
+//        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
+//      for (BoardSpace space : possibleMoves){
+//            calculatedMoves.add(minimaxRecursive(player, board));
+//      }
+//
+//
+//        LinkedList<BoardSpace> clientMoves = calculatedMoves;
+//        LinkedList<BoardSpace> serverMoves= calculatedMoves;
+//
+//        serverMoves.sort(new Comparator<BoardSpace>() {
+//                             @Override
+//                             public int compare(BoardSpace o1, BoardSpace o2) {
+//                                 return new Integer(o1.getServerWeight()).compareTo(new Integer(o2.getServerWeight()));
+//                             }
+//                         });
+//        clientMoves.sort(new Comparator<BoardSpace>() {
+//            @Override
+//            public int compare(BoardSpace o1, BoardSpace o2) {
+//                return new Integer(o1.getClientWeight()).compareTo(new Integer(o2.getClientWeight()));
+//            }
+//        });
+//        if(clientMoves.get(0).getClientWeight() > MINIMAX_WIN_FLAG){
+//            return clientMoves.get(0);
+//        }else{
+//            return serverMoves.get(0);
+//        }
 //        if(clientMoves.get(0).getClientWeight() >= serverMoves.get(0).getServerWeight()){
 //            return clientMoves.get(0);
 //        }else{
@@ -1432,7 +1520,7 @@ public class Server{
 //            return calculatedMoves.get(0);
 //        }
 
-    }
+//    }
 
     boolean isTwoInARow(BoardSpace space, int[][] board, int player){
         if(space.column == BOARD_ROWS-1){

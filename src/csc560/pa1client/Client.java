@@ -270,21 +270,24 @@ public class Client{
 
         private JButton createGridButton(final int row, final int col) {
             final JButton b = new JButton();
+            b.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("button clicked");
+                    JButton gb = GridButtonPanel.this.getGridButton(row, col);
+                    gb.setText("O");
+                    gb.setEnabled(false);
+                    System.out.println("We changed the value from ");
+                    GridButtonPanel.shouldWaitForUserInput = false;
+                    Thread t = Thread.currentThread();
+                    String name = t.getName();
+                    System.out.println("Current thread name: " + name);
 
-            b.addActionListener(e -> {
-                System.out.println("button clicked");
-                JButton gb = GridButtonPanel.this.getGridButton(row, col);
-                gb.setText("O");
-                gb.setEnabled(false);
-                System.out.println("We changed the value from ");
-                GridButtonPanel.shouldWaitForUserInput = false;
-                Thread t = Thread.currentThread();
-                String name = t.getName();
-                System.out.println("Current thread name: " + name);
-
-                processClientAction(board, new BoardSpace(row, col));
+                    processClientAction(board, new BoardSpace(row, col));
+                }
             });
             return b;
+
         }
 
         private JPanel createGridPanel() {
