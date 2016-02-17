@@ -40,21 +40,6 @@ public class Server{
             clientWeight = DEFAULTWEIGHT;
         }
 
-//        public BoardSpace(int column, int row, int clientWeight) {
-//            this.clientWeight = clientWeight;
-//            this.serverWeight = DEFAULTWEIGHT;
-//            this.column = column;
-//            this.row = row;
-//        }
-//
-//
-//        protected BoardSpace(int row, int column, int serverWeight){
-//            this.row = row;
-//            this.column = column;
-//            this.serverWeight = serverWeight;
-//            this.clientWeight = DEFAULTWEIGHT;
-//        }
-
         public BoardSpace(int clientWeight, int serverWeight, int column, int row) {
             this.clientWeight = clientWeight;
             this.serverWeight = serverWeight;
@@ -85,21 +70,7 @@ public class Server{
             this.column = column;
         }
 
-        public int getServerWeight() {
-            return serverWeight;
-        }
 
-        public void setServerWeight(int weight) {
-            this.serverWeight = weight;
-        }
-
-        public int getClientWeight() {
-            return clientWeight;
-        }
-
-        public void setClientWeight(int clientWeight) {
-            this.clientWeight = clientWeight;
-        }
 
         public int getOwner() {
             return owner;
@@ -109,9 +80,7 @@ public class Server{
             this.owner = owner;
         }
 
-        public int getAbsolutePostion(){
-            return (row*3)+column;
-        }
+
 
         public int getTotalScore() {
             return totalScore;
@@ -122,123 +91,93 @@ public class Server{
         }
     }
 
+    void acceptNonBlockingConnection(LinkedList<SocketChannel> connections, ServerSocketChannel ssc){
+        SocketChannel throwAway = null;
+        try {
+            throwAway = ssc.accept();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (throwAway != null){
+            connections.add(throwAway);
+        }
+    }
+
     void run()
     {
 
 
-
-        try{
-
-            ServerSocketChannel ssc = ServerSocketChannel.open();
+        ServerSocketChannel ssc = null;
+        LinkedList<SocketChannel> connections = null;
+        try {
+            ssc = ServerSocketChannel.open();
             ssc.socket().bind(new InetSocketAddress(7788));
             ssc.configureBlocking(false);
-            LinkedList<SocketChannel> connections = new LinkedList<SocketChannel>();
-
-            System.out.println("Waiting for connection");
-            while (true) {
-
-                SocketChannel sc = null;
-                if (connections.size() == 0) {
-                    //if we don't have any queued connections
-                    sc = ssc.accept();
-                    //if it's null, we want to wait till we get an incoming conneciton
-                    if(sc == null){
-                        while (sc == null){
-                            Thread.sleep(2000);
-                            sc= ssc.accept();
-                            System.out.println((sc == null) ? "Waiting for connection": "Accepted new incoming connection");
-                        }
-                    }
-                }else{
-                    //otherwise grab it off the queue
-                    sc = connections.pop();
-                    System.out.println("Grabbed connection from Queue");
-
-                }
-                boolean gameRunning = true;
-                Socket connection = sc.socket();
-                System.out.println("Connection received from " + connection.getInetAddress().getHostName());
-                Random rand = new Random();
-                int randomNum = rand.nextInt((100 - 1) + 1) + 1;
-                //if it's an even number let the server move first, otherwise let the client go first
-                boolean serverTurn= randomNum % 2 == 0;
-//                boolean serverTurn = true;
-                //we want the inverse
-                boolean clientTurn = !serverTurn;
-                int[][] board  = buildNewBoard();
-                out = new ObjectOutputStream(connection.getOutputStream());
-                out.flush();
-
-                if(!serverTurn){
-                    sendMessage("NONE");
-//                    out.writeObject("NONE");
-//                    out.flush();
-                }else{
-//                    board[0][0] = SERVER_ID;
-//                    if(generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW ){
-//                        sendMessage("MOVE "+0+" "+0+" "+getEndGameMessageAction(determineWinner(board)));
-////                        return true;
-//                    }else{
-//                        sendMessage("MOVE "+0+" "+0);
-////                        return false;
-//                    }
-
-                    executeServerMove(board);
-                }
-                in = new ObjectInputStream(connection.getInputStream());
-                while (gameRunning){
-                    SocketChannel throwAway = ssc.accept();
-                    if (throwAway != null){
-                        connections.add(throwAway);
-                    }
-//                    ssc.configureBlocking(true);
-                    //3. get Input and Output streams
-
-
-
-                    if (processMove((String) in.readObject(),board, CLIENT_ID )){
-                        break;
-                    }
-                    if(executeServerMove(board)){
-                        break;
-                    }
-
-
-//                    sendMessage("Connection successful");
-
-
-                    //4. The two parts communicate via the input and output streams
-
-                    if (generateGameState(board).size() == 0) {
-                        gameRunning = false;
-//                        sendMessage("MOVEWIN");
-                    }
-//                    String message;
-                    //check incoming connections
-
-//                    Thread.sleep(5000);
-//                    message = readIncomingMessage(in);
-
-
-                }
-
-
-            }
+            connections = new LinkedList<SocketChannel>();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        catch(Exception ioException){
-            ioException.printStackTrace();
+      while (true){
+          try{
+              System.out.println("Waiting for connection");
+              while (true) {
 
-        } finally{
-            //4: Closing connection
-            try{
-                in.close();
-                out.close();
-                providerSocket.close();
-            }
-            catch(IOException ioException){
-                ioException.printStackTrace();
-            }
-        }
+                  SocketChannel sc = null;
+                  if (connections.size() == 0) {
+                      //if we don't have any queued connections
+                      sc = ssc.accept();
+                      //if it's null, we want to wait till we get an incoming conneciton
+                      if(sc == null){
+                          while (sc == null){
+                              Thread.sleep(2000);
+                              sc= ssc.accept();
+                              System.out.println((sc == null) ? "Waiting for connection": "Accepted new incoming connection");
+                          }
+                      }
+                  }else{
+                      //otherwise grab it off the queue
+                      sc = connections.pop();
+                      System.out.println("Grabbed connection from Queue");
+
+                  }
+                  boolean gameRunning = true;
+                  Socket connection = sc.socket();
+                  System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+                  Random rand = new Random();
+                  int randomNum = rand.nextInt((100 - 1) + 1) + 1;
+                  //if it's an even number let the server move first, otherwise let the client go first
+                  boolean serverTurn= randomNum % 2 == 0;
+                  int[][] board  = buildNewBoard();
+                  out = new ObjectOutputStream(connection.getOutputStream());
+                  out.flush();
+
+                  if(!serverTurn){
+                      sendMessage("NONE");
+                  }else{
+                      executeServerMove(board);
+                  }
+                  in = new ObjectInputStream(connection.getInputStream());
+                  while (gameRunning){
+                      //just each time through check for a new conneciton
+                      acceptNonBlockingConnection(connections, ssc);
+                      if (processMove((String) in.readObject(),board, CLIENT_ID )){
+                          break;
+                      }
+                      if(executeServerMove(board)){
+                          break;
+                      }
+
+                      if (generateGameState(board).size() == 0) {
+                          gameRunning = false;
+                      }
+                  }
+              }
+          }
+          catch(Exception ioException){
+              ioException.printStackTrace();
+
+          }
+      }
     }
 
     ArrayList<BoardSpace> boardArrayToArrayList(int[][] board){
@@ -254,9 +193,6 @@ public class Server{
 
     int determineWinner(int[][] board){
         ArrayList<BoardSpace> boardSpace = boardArrayToArrayList(board);
-//        if(generateGameState(board).size() != 0){
-//            return EMPTY_ROW;
-//        }
         //the rows
         int totalScore = 0;
         for(int i = 0; i < BOARD_COLUMNS*BOARD_ROWS-1; i = i+BOARD_ROWS){
@@ -282,9 +218,7 @@ public class Server{
 
             //now whether we have a winner in the row
             for(int j = 0; j < BOARD_ROWS; j++){
-//                System.out.println("Getting cell value for row at : "+(j+i));
                 totalScore  = totalScore+boardSpace.get(i+j).getOwner();
-
             }
 
             if (totalScore == boardSpace.get(i).getOwner()*BOARD_ROWS && totalScore != 0){
@@ -298,7 +232,6 @@ public class Server{
         //here's the diagonal
         totalScore = 0;
         for(int i = 0; i < BOARD_ROWS*3; i = i +BOARD_ROWS+1){
-//            System.out.println("Getting cell value for diagonal at : "+(i));
             totalScore = totalScore+boardSpace.get(i).getOwner();
         }
 
@@ -310,94 +243,14 @@ public class Server{
         //the other diagonal
         totalScore = 0;
         for(int i = 2; i < BOARD_ROWS*2+1; i = i +BOARD_ROWS-1){
-//            System.out.println("Getting cell value for diagonal at : "+(i));
             totalScore = totalScore+boardSpace.get(i).getOwner();
         }
         if (totalScore == boardSpace.get(2).getOwner()*BOARD_ROWS && totalScore != 0){
             return boardSpace.get(2).getOwner();
         }
 
-
-
-//        for(int[] row : board){
-//
-//        }
-
-
         return generateGameState(board).size() == 0 ? TIE_FLAG: EMPTY_ROW;
     }
-//    int determineWinner(int[][] board){
-//        ArrayList<BoardSpace> boardSpace = boardArrayToArrayList(board);
-////        if(generateGameState(board).size() != 0){
-////            return EMPTY_ROW;
-////        }
-//        //the rows
-//        int totalScore = 0;
-//        for(int i = 0; i < BOARD_COLUMNS*BOARD_ROWS-1; i = i+BOARD_ROWS){
-//
-//            if (i < BOARD_ROWS){
-//                //now the columns
-//                for(int j = i; j < BOARD_ROWS; j++){
-//
-//                    for(int k = 0; k < BOARD_ROWS; k++){
-//                        totalScore = totalScore + boardSpace.get(k+(k*BOARD_ROWS)).getOwner();
-//
-//                    }
-//                    if (totalScore == boardSpace.get(i+j).getOwner()*BOARD_ROWS &&  totalScore != 0){
-//                        return boardSpace.get(i+j).getOwner();
-//                    }
-//                }
-//                totalScore=0;
-//
-//
-//            }
-//
-//            //now whether we have a winner in the row
-//            for(int j = 0; j < BOARD_ROWS; j++){
-//                System.out.println("Getting cell value for row at : "+(j+i));
-//                totalScore  = totalScore+boardSpace.get(i+j).getOwner();
-//
-//            }
-//
-//            if (totalScore == boardSpace.get(i).getOwner()*BOARD_ROWS && totalScore != 0){
-//                return boardSpace.get(i).getOwner();
-//            }
-//
-//            totalScore = 0;
-//
-//
-//        }
-//        //here's the diagonal
-//        totalScore = 0;
-//        for(int i = 0; i < BOARD_ROWS; i = i +BOARD_ROWS+1){
-//            System.out.println("Getting cell value for diagonal at : "+(i));
-//            totalScore = totalScore+boardSpace.get(i).getOwner();
-//        }
-//
-//        if (totalScore == boardSpace.get(0).getOwner()*BOARD_ROWS && totalScore != 0){
-//
-//            return boardSpace.get(0).getOwner();
-//        }
-//
-//        //the other diagonal
-//        totalScore = 0;
-//        for(int i = 2; i < BOARD_ROWS; i = i +BOARD_ROWS-1){
-//            System.out.println("Getting cell value for diagonal at : "+(i));
-//            totalScore = totalScore+boardSpace.get(i).getOwner();
-//        }
-//        if (totalScore == boardSpace.get(2).getOwner()*BOARD_ROWS && totalScore != 0){
-//            return boardSpace.get(0).getOwner();
-//        }
-//
-//
-//
-////        for(int[] row : board){
-////
-////        }
-//
-//
-//        return generateGameState(board).size() == 0? TIE_FLAG: EMPTY_ROW;
-//    }
 
     String getEndGameMessageAction(int winner){
         switch (winner){
@@ -412,45 +265,6 @@ public class Server{
 
         return "";
     }
-
-
-
-    String readIncomingMessage(DataInputStream in){
-        byte[] messageByte = new byte[1000];
-        boolean end = false;
-        String dataString = "";
-        String messageString = "";
-
-        try
-        {
-//            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-            int bytesRead = 0;
-
-            messageByte[0] = in.readByte();
-            messageByte[1] = in.readByte();
-
-            int bytesToRead = messageByte[1];
-
-            while(!end)
-            {
-                bytesRead = in.read(messageByte);
-                messageString += new String(messageByte, 0, bytesRead);
-                if (messageString.length() == bytesToRead )
-                {
-                    end = true;
-                }
-            }
-            System.out.println("MESSAGE: " + messageString);
-            return dataString;
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return messageString;
-    }
-
 
     void sendMessage(String msg)
     {
@@ -469,54 +283,8 @@ public class Server{
     }
     public static void main(String args[])
     {
-//        //ok let's test this
-        Server s = new Server();
-        int[][] board = s.buildNewBoard();
-//        board[0][0] = s.CLIENT_ID;
-        board[0][2] = s.CLIENT_ID;
-//        board[1][0] = s.CLIENT_ID;
-        board[1][1] = s.CLIENT_ID;
-//        board[1][2] = s.CLIENT_ID;
-        board[1][0] = s.SERVER_ID;
-        board[0][1] = s.SERVER_ID;
-        int winner = s.determineWinner(board);
-//        board[2][2] = s.SERVER_ID;
-//        BoardSpace space = s.minimax(0, s.SERVER_ID,board);
-
-////        BoardSpace bo
-////        board[2][0] = s.CLIENT_ID;
-//        System.out.println(s.generateMoveValue(s.test(2,0), board, s.CLIENT_ID));
-//        System.out.println(s.determineWinner(board));
-
-//        board[2][0] = s.SERVER_ID;
-//        boolean serverTurn = true;
-//        Scanner scan= new Scanner(System.in);
-//        s.printBoard(board);
-//        while (s.generateGameState(board).size() > 0){
-//
-//            int player = (serverTurn)? s.SERVER_ID:s.CLIENT_ID;
-//            if (player == s.CLIENT_ID){
-//                System.out.print("Enter the row: ");
-//                int row= scan.nextInt();
-//                System.out.print("Enter the column: ");
-//                int column= scan.nextInt();
-//                board[row][column] = s.CLIENT_ID;
-//
-//            }else {
-//                int[][] tmpBoard = s.fuckYouJavaCopyBoard(board);
-//                BoardSpace space = s.minimax(player, board);
-//                board[space.row][space.column] = player;
-//            }
-//            serverTurn = !serverTurn;
-//            s.printBoard(board);
-//
-//        }
-
-
         Server server = new Server();
-        while(true){
-            server.run();
-        }
+        server.run();
     }
 
     void printBoard(int[][] board){
@@ -550,26 +318,33 @@ public class Server{
      */
     boolean processMove(String move, int[][] board, int player){
         String[] tmp=move.split(" ");
-        int  row = Integer.parseInt(tmp[1]);
-        int column = Integer.parseInt(tmp[2]);
+        try {
+            int  row = Integer.parseInt(tmp[1]);
+            int column = Integer.parseInt(tmp[2]);
 
-        if(board[row][column] == 0){
-            board[row][column] = player;
+            if(board[row][column] == 0){
+                board[row][column] = player;
 
-            if (generateGameState(board).size() == 0|| determineWinner(board) != EMPTY_ROW ){
-                sendMessage("MOVE "+row+" "+column+" "+getEndGameMessageAction(determineWinner(board)));
-                return true;
-            }else{
+                if (generateGameState(board).size() == 0|| determineWinner(board) != EMPTY_ROW ){
+                    sendMessage("MOVE "+row+" "+column+" "+getEndGameMessageAction(determineWinner(board)));
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            else{
                 return false;
             }
-
-
-        }
-        else{
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
             return false;
         }
-    }
+        catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return false;
+        }
 
+    }
     ArrayList<BoardSpace> generateGameState(int[][] board){
         //fuck the java 8 standard
         ArrayList<BoardSpace> results = new ArrayList<BoardSpace>();
@@ -584,32 +359,14 @@ public class Server{
 
     }
 
-//    boolean executeServerMove(int[][] board){
-//        BoardSpace serverSpace = minimax(SERVER_ID, board);
-//        BoardSpace clientSpace = minimax(CLIENT_ID, board);
-//        BoardSpace space;
-//        if(serverSpace.getServerWeight() > clientSpace.getClientWeight()){
-//            space = serverSpace;
-//        }else if(serverSpace.getServerWeight() < clientSpace.getClientWeight()){
-//            space = clientSpace;
-//        }else if(serverSpace.getServerWeight() == clientSpace.getClientWeight()){
-//            space = clientSpace;
-//        }else{
-//            space = serverSpace;
-//        }
-//        board[space.row][space.column] = SERVER_ID;
-//        if(generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW ){
-//            sendMessage("MOVE "+space.row+" "+space.column+" "+getEndGameMessageAction(determineWinner(board)));
-//            return true;
-//        }else{
-//            sendMessage("MOVE "+space.row+" "+space.column);
-//            return false;
-//        }
-//
-//    }
+    /**
+     * DEtermine a move
+     * @param board the current board state
+     * @return boolean wheter the game neded nor not
+     */
     boolean executeServerMove(int[][] board){
         BoardSpace space = minimax(0,SERVER_ID, board);
-        System.out.println("Chose move with value: "+space.getTotalScore());
+        System.out.println("Chose move with value "+space.getTotalScore()+" at position "+space.getRow()+" "+space.getColumn());
         board[space.row][space.column] = SERVER_ID;
         if(generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW ){
             sendMessage("MOVE "+space.row+" "+space.column+" "+getEndGameMessageAction(determineWinner(board)));
@@ -621,645 +378,11 @@ public class Server{
 
     }
 
-
-    int generateMoveValue(BoardSpace space, int[][] board, int player){
-        // so here we want to determine how close we are to 3 in a row
-        int totalMoveWeight = 0;
-        if(space.row == 1){
-            // handle case if it's a middle row
-            //check to see if we're working toward a vertical win
-
-            //here's all the ones for the horizontal cases
-            //if it's the center column
-            if(space.column == 1){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-                //vertical
-                tmpWeight = (board[space.row+1][space.column] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-1][space.column] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-                //diagonal
-                tmpWeight = (board[space.row+1][space.column+1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-1][space.column-1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //diagonal
-                tmpWeight = (board[space.row+1][space.column-1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-1][space.column+1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-//            //if return if the move would give us a win
-//            if(totalMoveWeight == DEFAULTWEIGHT*3)
-//                return totalMoveWeight;
-            //if it's the end column
-            if (space.column == 2){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //the vertical
-                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+1][space.column ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-
-
-            }
-
-            if (space.column == 0){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //the vertical
-                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+1][space.column ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-
-
-
-
-        }
-
-
-        //bottom row
-        if(space.row == 2){
-
-            if (space.column == 0){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //vertical
-                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-                //diagonal
-                tmpWeight = (board[space.row-1][space.column+1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-2][space.column+2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-
-            if(space.column == 1){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column -1 ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //vertical
-                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-
-            if(space.column==2){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //vertical
-                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //diagonal
-                tmpWeight = (board[space.row-1][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row-2][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-        }
-
-        //top row
-        if (space.row == 0  ){
-
-            if (space.column == 0){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //vertical
-                tmpWeight = (board[space.row+1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-                //diagonal
-                tmpWeight = (board[space.row+1][space.column+1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+2][space.column+2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-
-            if(space.column == 1){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column -1 ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //vertical
-                tmpWeight = (board[space.row+1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-
-            if(space.column==2){
-                int tmpWeight = DEFAULTWEIGHT;
-                //horizontal
-                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //vertical
-                tmpWeight = (board[space.row+1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-
-                //diagonal
-                tmpWeight = (board[space.row+1][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-                tmpWeight = (board[space.row+2][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-
-                //if return if the move would give us a win
-                if(tmpWeight == DEFAULTWEIGHT*3)
-                    return MINIMAX_WIN_FLAG;
-                else
-                    totalMoveWeight += tmpWeight;
-                tmpWeight = DEFAULTWEIGHT;
-            }
-
-        }
-        return totalMoveWeight;
-    }
-
-//    int generateMoveValue(BoardSpace space, int[][] board, int player){
-//        // so here we want to determine how close we are to 3 in a row
-//        int totalMoveWeight = 0;
-//        if(space.row == 1){
-//            // handle case if it's a middle row
-//            //check to see if we're working toward a vertical win
-//
-//            //here's all the ones for the horizontal cases
-//            //if it's the center column
-//            if(space.column == 1){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//                //vertical
-//                tmpWeight = (board[space.row+1][space.column] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-1][space.column] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//                //diagonal
-//                tmpWeight = (board[space.row+1][space.column+1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-1][space.column-1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //diagonal
-//                tmpWeight = (board[space.row+1][space.column-1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-1][space.column+1] == player)? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-////            //if return if the move would give us a win
-////            if(totalMoveWeight == DEFAULTWEIGHT*3)
-////                return totalMoveWeight;
-//            //if it's the end column
-//            if (space.column == 2){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //the vertical
-//                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+1][space.column ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//
-//
-//            }
-//
-//            if (space.column == 0){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //the vertical
-//                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+1][space.column ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//
-//
-//
-//
-//        }
-//
-//
-//        //bottom row
-//        if(space.row == 2){
-//
-//            if (space.column == 0){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //vertical
-//                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//                //diagonal
-//                tmpWeight = (board[space.row-1][space.column+1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-2][space.column+2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//
-//            if(space.column == 1){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column -1 ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //vertical
-//                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//
-//            if(space.column==2){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //vertical
-//                tmpWeight = (board[space.row-1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //diagonal
-//                tmpWeight = (board[space.row-1][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row-2][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//        }
-//
-//        //top row
-//        if (space.row == 0  ){
-//
-//            if (space.column == 0){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column + 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //vertical
-//                tmpWeight = (board[space.row+1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//                //diagonal
-//                tmpWeight = (board[space.row+1][space.column+1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+2][space.column+2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//
-//            if(space.column == 1){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column + 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column -1 ] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //vertical
-//                tmpWeight = (board[space.row+1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//
-//            if(space.column==2){
-//                int tmpWeight = DEFAULTWEIGHT;
-//                //horizontal
-//                tmpWeight = (board[space.row][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //vertical
-//                tmpWeight = (board[space.row+1][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+2][space.column] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//
-//                //diagonal
-//                tmpWeight = (board[space.row+1][space.column - 1] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//                tmpWeight = (board[space.row+2][space.column - 2] == player) ? tmpWeight += DEFAULTWEIGHT : tmpWeight;
-//
-//                //if return if the move would give us a win
-//                if(tmpWeight == DEFAULTWEIGHT*3)
-//                    return MINIMAX_WIN_FLAG;
-//                else
-//                    totalMoveWeight += tmpWeight;
-//                tmpWeight = DEFAULTWEIGHT;
-//            }
-//
-//        }
-//        return totalMoveWeight;
-//    }
-
+    /**
+     * because I need a way to copy a multi-dimensional array and Arrays.copy doesn't work because FUCK java.
+     * @param array
+     * @return
+     */
     int[][] fuckYouJavaCopyBoard(int[][] array){
         int [][] tmp = buildNewBoard();
         for (int i =0; i < BOARD_ROWS; i++){
@@ -1271,7 +394,7 @@ public class Server{
     }
 
 
-    //this is actually our recursive algorithm
+
     int getOppositePlayer(int player){
         if (player == CLIENT_ID){
             return SERVER_ID;
@@ -1279,77 +402,16 @@ public class Server{
             return CLIENT_ID;
         }
     }
-//    BoardSpace minimaxRecursive(int player, int[][] board){
-////        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
-//        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
-//        if(possibleMoves.size() == 1){
-//            if(player == CLIENT_ID){
-//                possibleMoves.get(0).setClientWeight(generateMoveValue(possibleMoves.get(0), board, player));
-//            }else{
-//                possibleMoves.get(0).setServerWeight(generateMoveValue(possibleMoves.get(0), board, player));
-//            }
-//
-//            return possibleMoves.get(0);
-//        }
-//        for (BoardSpace space : possibleMoves){
-//            int score = generateMoveValue(space,board,player);
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[space.row][space.column] = player;
-//            BoardSpace s = minimaxRecursive(getOppositePlayer(player), tmpBoard);
-//            if(player == CLIENT_ID){
-//                s.setClientWeight(score);
-//            }else{
-//                s.setServerWeight(score);
-//            }
-//            if (score==MINIMAX_WIN_FLAG){
-//                return s;
-//            }
-//
-//        }
-//        return new BoardSpace();
-//    }
 
-//    int fuck(int depth, int player, int[][]board){
-//        depth++;
-//        ArrayList<BoardSpace> possibleMoves = generateGameState(board);
-//        //base case
-//        if (possibleMoves.size() == 1) {
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
-//            int winner = determineWinner(tmpBoard);
-//            if(winner == player) {
-//                possibleMoves.get(0).setTotalScore(10-depth);
-////                return possibleMoves.get(0);
-//                return (10-depth);
-//            }else if (winner == getOppositePlayer(player)){
-////                possibleMoves.get(0).setTotalScore((depth-10));
-////                return possibleMoves.get(0);
-//                return (depth-10);
-//            }else{
-//
-////                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
-////                possibleMoves.get(0).setTotalScore(0);
-////                return possibleMoves.get(0);
-//                return 0;
-//// .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
-//            }
-//
-//
-//
-//        }else{
-//        ArrayList<Integer> calculatedMoves = new ArrayList<Integer>();
-//        for (BoardSpace space: possibleMoves) {
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[space.row][space.column] = player;
-//            calculatedMoves.add(fuck(depth, getOppositePlayer(player), tmpBoard));
-//        }
-//        }
-//
-//
-//    }
-
-    ArrayList<BoardSpace> cMoves = new ArrayList<BoardSpace>();
-    int minimaxScore(int depth, int player, int[][] board, BoardSpace space, int minimaxScore) {
+    /**
+     * Here's the actual minimax scoring algorithm
+     * @param depth the depth
+     * @param player the player
+     * @param board the board state
+     * @param space the space we want to get the minimax score for
+     * @return
+     */
+    int minimaxScore(int depth, int player, int[][] board, BoardSpace space) {
 
         ArrayList<BoardSpace> possibleMoves = generateGameState(board);
         //base case
@@ -1363,26 +425,19 @@ public class Server{
             if(winner == player) {
                 return depth-10;
 
-//                return possibleMoves.get(0);
             }else if (winner == getOppositePlayer(player)){
 
                 return (10-depth);
             }
-//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore()+(depth-10));
-//                return possibleMoves.get(0);
             else{
 
-//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
-//                possibleMoves.get(0).setTotalScore(0);
                 return 0;
-//                return possibleMoves.get(0);
-// .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
             }
         }
         depth++;
 
 
-//        }
+
         ArrayList<BoardSpace> calculatedMoves = new ArrayList<BoardSpace>();
 
         for (BoardSpace s: possibleMoves) {
@@ -1397,7 +452,7 @@ public class Server{
                 return  depth-10;
 
             }
-                s.setTotalScore(minimaxScore(depth, getOppositePlayer(player), tmpBoard,s, 0));
+                s.setTotalScore(minimaxScore(depth, getOppositePlayer(player), tmpBoard,s));
             calculatedMoves.add(s);
 
         }
@@ -1416,50 +471,11 @@ public class Server{
 
     }
     BoardSpace minimax(int depth, int player, int[][] board) {
-//        depth++;
         ArrayList<BoardSpace> possibleMoves = generateGameState(board);
-//        //base case
-//        if (possibleMoves.size() == 1) {
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
-//            System.out.println("Final state reached\n\n");
-//            printBoard(tmpBoard);
-//            System.out.println("Final state reached\n\n");
-//            int winner = determineWinner(tmpBoard);
-//            if(winner == player) {
-//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore()+10-depth);
-//                return possibleMoves.get(0);
-//            }else if (winner == getOppositePlayer(player)){
-//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore()+(depth-10));
-//                return possibleMoves.get(0);
-//            }else{
-//
-////                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
-////                possibleMoves.get(0).setTotalScore(0);
-//                return possibleMoves.get(0);
-//// .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
-//            }
-//
-//
-//        }
         ArrayList<BoardSpace> calculatedMoves = new ArrayList<BoardSpace>();
         for (BoardSpace space: possibleMoves) {
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[space.row][space.column] = player;
-//            int possibleWinner = determineWinner(tmpBoard);
-//            if (possi1bleWinner == player){
-//                space.setTotalScore(10 - depth);
-//                calculatedMoves.add(space);
-//                continue;
-//            }else if (possibleWinner == getOppositePlayer(player)){
-//                space.setTotalScore(depth - 10);
-//                calculatedMoves.add(space);
-//                continue;
-//            }else {
-//            printBoard(tmpBoard);
-                space.setTotalScore(minimaxScore(depth, player, board, space, 0));
+                space.setTotalScore(minimaxScore(depth, player, board, space));
                 calculatedMoves.add(space);
-//            }
         }
         Collections.sort(calculatedMoves,new Comparator<BoardSpace>() {
                              @Override
@@ -1469,255 +485,8 @@ public class Server{
                              }
                          });
 
-//    return calculatedMoves.get(0);
-//        return calculatedMoves.get(calculatedMoves.size()-1);
-        cMoves = calculatedMoves;
         return calculatedMoves.get(0);
-//        if(Math.abs(calculatedMoves.get(0).getTotalScore()) <= Math.abs(calculatedMoves.get(calculatedMoves.size()-1).getTotalScore())){
-//            return calculatedMoves.get(calculatedMoves.size()-1);
-//        }else  if(Math.abs(calculatedMoves.get(0).getTotalScore()) == Math.abs(calculatedMoves.get(calculatedMoves.size()-1).getTotalScore())){
-//            return calculatedMoves.get(calculatedMoves.size()-1);
-//        }else{
-//            return calculatedMoves.get(0);
-//        }
-//        return
-
-//        return new BoardSpace();
     }
-//        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
-//        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
-//      for (BoardSpace space : possibleMoves){
-//            calculatedMoves.add(minimaxRecursive(player, board));
-//      }
-//
-//
-//        LinkedList<BoardSpace> clientMoves = calculatedMoves;
-//        LinkedList<BoardSpace> serverMoves= calculatedMoves;
-//
-//        serverMoves.sort(new Comparator<BoardSpace>() {
-//                             @Override
-//                             public int compare(BoardSpace o1, BoardSpace o2) {
-//                                 return new Integer(o1.getServerWeight()).compareTo(new Integer(o2.getServerWeight()));
-//                             }
-//                         });
-//        clientMoves.sort(new Comparator<BoardSpace>() {
-//            @Override
-//            public int compare(BoardSpace o1, BoardSpace o2) {
-//                return new Integer(o1.getClientWeight()).compareTo(new Integer(o2.getClientWeight()));
-//            }
-//        });
-//        if(clientMoves.get(0).getClientWeight() > MINIMAX_WIN_FLAG){
-//            return clientMoves.get(0);
-//        }else{
-//            return serverMoves.get(0);
-//        }
-//        if(clientMoves.get(0).getClientWeight() >= serverMoves.get(0).getServerWeight()){
-//            return clientMoves.get(0);
-//        }else{
-//            return serverMoves.get(0);
-//        }
-
-//        //base case
-//        if ( possibleMoves.size() == 1){
-//            return possibleMoves.get(0);
-//        }
-//        for(int i = 0; i < possibleMoves.size(); i++) {
-//            BoardSpace space = possibleMoves.get(i);
-//
-//            int clientWeight = generateMoveValue(space, board, CLIENT_ID);
-//            //we want to block a win for the client
-////            if (clientWeight== MINIMAX_WIN_FLAG){
-////                return space;
-////            }
-//
-//            int serverWeight = generateMoveValue(space, board, SERVER_ID);
-////            if (serverWeight == MINIMAX_WIN_FLAG){
-////                return space;
-////            }
-//
-//            space.setServerWeight(space.getServerWeight() + serverWeight);
-//
-//            space.setClientWeight(space.getClientWeight() + clientWeight);
-//            calculatedMoves.add(space);
-//        }
 
 
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[space.row][space.column] = PLAYER;
-////            BoardSpace s =
-//            BoardSpace sSpace = minimax(CLIENT_ID, tmpBoard);
-//            BoardSpace cSpace = minimax(SERVER_ID, tmpBoard);
-////            s.setServerWeight(s.getServerWeight()+serverWeight);
-////            s.setClientWeight(s.getClientWeight()+clientWeight);
-//
-//            //check if after the game plays out, this is the overall best move
-////            if (s.row == space.row && s.column == space.column){
-////                calculatedMoves.add(space);
-////            }else{
-////                calculatedMoves.add(s);
-////            }
-//
-//        }
-//
-//                if (calculatedMoves.size() > 1) {
-//            calculatedMoves.sort(new Comparator<BoardSpace>() {
-//                @Override
-//                public int compare(BoardSpace o1, BoardSpace o2) {
-//                        if(o1.getClientWeight() > o2.getClientWeight()){
-//                            return -1;
-//                        }else if (o1.getClientWeight() < o2.getClientWeight()){
-//                            return 1;
-//                        }else{
-//                            return 0;
-////                            if(o1.getServerWeight() > o2.getServerWeight()){
-////                                return -1;
-////                            }else if(o1.getServerWeight() < o2.getServerWeight()){
-////                                return 1;
-////                            }else{
-////                                return 0;
-////                            }
-//
-////                            return 0;
-//                        }
-////                        if(o1.getServerWeight() > o1.getClientWeight() && o1.getServerWeight() > o2.getClientWeight()){
-////                            return -1;
-////                        }else if (o2.getServerWeight() > o2.getClientWeight() && o2.getServerWeight() > o1.getClientWeight()){
-////                            return -1;
-////                        }else if (o1.getServerWeight() < o2.getClientWeight() && o1.getServerWeight() < o1.getClientWeight()){
-////                            return -1;
-////                        }else if (o2.getServerWeight() > o2.getClientWeight() && o2.getServerWeight() > o1.getClientWeight()){
-////                            return -1;
-////                        }
-////                        return 0;
-//
-//////                    int serverWeightResult  = new Integer(o1.getServerWeight()).compareTo(new Integer((o1.getClientWeight())));
-//////                    if (serverWeightResult != 0){
-//////                        return serverWeightResult;
-//////                    }else{
-////                        return new Integer(o2.getClientWeight()).compareTo(new Integer(o2.getClientWeight()));
-//////                    }
-//
-//
-//                }
-//            });
-//        }
-////        return calculatedMoves.get(calculatedMoves.size()-1);
-//        if (calculatedMoves.size() >= 2) {
-////            if ()
-//
-//            if(calculatedMoves.get(0).getServerWeight() == calculatedMoves.get(1).getServerWeight() && calculatedMoves.get(0).getClientWeight() == calculatedMoves.get(0).getClientWeight()){
-//                return calculatedMoves.get(1);
-//            }else if(calculatedMoves.get(0).getClientWeight() <= calculatedMoves.get(1).getClientWeight()){
-//                return calculatedMoves.get(1);
-//            }else if(calculatedMoves.get(0).getClientWeight() >= calculatedMoves.get(1).getClientWeight()){
-//                return  calculatedMoves.get(0);
-//
-//            }else if(calculatedMoves.get(0).getClientWeight() <= calculatedMoves.get(1).getServerWeight()){
-//                return calculatedMoves.get(1);
-//            }else if(calculatedMoves.get(0).getServerWeight() >= calculatedMoves.get(1).getClientWeight()){
-//                return calculatedMoves.get(1);
-//            }else{
-//                return calculatedMoves.get(0);
-//            }
-//        }else{
-//            return calculatedMoves.get(0);
-//        }
-
-//    }
-
-    boolean isTwoInARow(BoardSpace space, int[][] board, int player){
-        if(space.column == BOARD_ROWS-1){
-            if (board[space.row][space.column-1] == player){
-                return true;
-            }
-        }
-
-        if(space.column == BOARD_ROWS -2){
-            if(board[space.row][space.column-1] == player || board[space.row][space.column+1] == player){
-                return true;
-            }
-        }
-        if(space.column == 0){
-            if (board[space.row][space.column+1] == player){
-                return true;
-            }
-        }
-
-
-        return false;
-    }
-    //this is actually our recursive algorithm
-//    BoardSpace minimax(int PLAYER, int[][] board){
-//        LinkedList<BoardSpace> possibleMoves = generateGameState(board);
-//        LinkedList<BoardSpace> calculatedMoves = new LinkedList<BoardSpace>();
-//        //base case
-//        if ( possibleMoves.size() == 1){
-//            return possibleMoves.get(0);
-//        }
-//        for(BoardSpace space : possibleMoves){
-//
-//            int clientWeight = generateMoveValue(space, board, CLIENT_ID);
-//            //we want to block a win for the client
-//            if (clientWeight== MINIMAX_WIN_FLAG){
-//                space.setClientWeight(clientWeight);
-//                return space;
-//            }
-//
-//
-//            int serverWeight = generateMoveValue(space, board, SERVER_ID);
-//            if (serverWeight == MINIMAX_WIN_FLAG){
-//                space.setServerWeight(serverWeight);
-//                return space;
-//            }
-//
-//
-//
-//
-//
-//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-//            tmpBoard[space.row][space.column] = PLAYER;
-//            BoardSpace s = minimax(PLAYER, tmpBoard);
-//            //check if after the game plays out, this is the overall best move
-//            if(s.getServerWeight() > s.getClientWeight() && space.getServerWeight() > space.getClientWeight()){
-//                if (s.getServerWeight() >= space.getServerWeight()){
-//                    calculatedMoves.add(s);
-//                }else{
-//                    calculatedMoves.add(space);
-//                }
-//            }else if(s.getServerWeight() <= s.getClientWeight() && space.getServerWeight() <= space.getClientWeight()){
-//                if (s.getServerWeight() >= space.getServerWeight()){
-//                    calculatedMoves.add(s);
-//                }else{
-//                    calculatedMoves.add(space);
-//                }
-//            }else{
-//                calculatedMoves.add(space);
-//            }
-////            if (s.row == space.row && s.column == space.column){
-////                calculatedMoves.add(space);
-////            }else{
-////                calculatedMoves.add(s);
-////            }
-//
-//        }
-//
-//        if (calculatedMoves.size() > 1) {
-//            calculatedMoves.sort(new Comparator<BoardSpace>() {
-//                @Override
-//                public int compare(BoardSpace o1, BoardSpace o2) {
-//                    int serverWeightResult  = new Integer(o1.getServerWeight()).compareTo(new Integer(o2.getServerWeight()));
-//                    if (serverWeightResult != 0){
-//                        return serverWeightResult;
-//                    }else{
-//                        return new Integer(o1.getClientWeight()).compareTo(new Integer(o2.getClientWeight()));
-//                    }
-//
-//
-//                }
-//            });
-//        }
-//
-//
-//        return calculatedMoves.get(0);
-//    }
 }
