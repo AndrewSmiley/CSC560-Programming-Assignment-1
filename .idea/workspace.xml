@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da5941cb-227b-4b72-a78b-3c3a24fe7a1a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/csc560/pa1server/Server.java" afterPath="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/csc560/pa1client/Client.java" afterPath="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
     </list>
     <ignored path="CSC-Programming-Assignment-1-Server.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Server.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Server.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6967655">
-              <caret line="382" column="19" selection-start-line="382" selection-start-column="19" selection-end-line="382" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="350" column="6" selection-start-line="350" selection-start-column="6" selection-end-line="356" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#1734#1735#0" expanded="true" />
@@ -58,23 +57,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Client.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Client.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="254" column="13" selection-start-line="254" selection-start-column="13" selection-end-line="254" selection-end-column="13" />
+            <state vertical-scroll-proportion="0.4541779">
+              <caret line="99" column="39" selection-start-line="99" selection-start-column="39" selection-end-line="99" selection-end-column="39" />
               <folding>
-                <element signature="e#980#981#0" expanded="false" />
-                <element signature="e#1022#1023#0" expanded="false" />
-                <element signature="e#1065#1066#0" expanded="false" />
-                <element signature="e#1111#1112#0" expanded="false" />
-                <element signature="e#1149#1150#0" expanded="false" />
-                <element signature="e#1194#1195#0" expanded="false" />
-                <element signature="e#1243#1244#0" expanded="false" />
-                <element signature="e#1295#1296#0" expanded="false" />
+                <element signature="imports" expanded="true" />
                 <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-                <element signature="e#6288#6289#0" expanded="false" />
-                <element signature="e#6332#6333#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -101,8 +91,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/csc560/pa1server/Main.java" />
-        <option value="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
         <option value="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
+        <option value="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
       </list>
     </option>
   </component>
@@ -668,12 +658,12 @@
       <workItem from="1455389077173" duration="24923000" />
       <workItem from="1455483023492" duration="42455000" />
       <workItem from="1455591771393" duration="26658000" />
-      <workItem from="1455715950815" duration="2718000" />
+      <workItem from="1455715950815" duration="5210000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="127853000" />
+    <option name="totallyTimeSpent" value="130345000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="839" extended-state="6" />
@@ -788,17 +778,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="254" column="13" selection-start-line="254" selection-start-column="13" selection-end-line="254" selection-end-column="13" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -838,17 +819,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="245" column="36" selection-start-line="245" selection-start-column="36" selection-end-line="245" selection-end-column="36" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -888,17 +860,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="90" column="25" selection-start-line="90" selection-start-column="25" selection-end-line="90" selection-end-column="25" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -938,17 +901,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="20" column="25" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -988,17 +942,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1038,17 +983,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1088,17 +1024,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="19" column="12" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="12" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1138,45 +1065,16 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="19" column="12" selection-start-line="19" selection-start-column="12" selection-end-line="19" selection-end-column="12" />
           <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="254" column="13" selection-start-line="254" selection-start-column="13" selection-end-line="254" selection-end-column="13" />
-          <folding>
-            <element signature="e#980#981#0" expanded="false" />
-            <element signature="e#1022#1023#0" expanded="false" />
-            <element signature="e#1065#1066#0" expanded="false" />
-            <element signature="e#1111#1112#0" expanded="false" />
-            <element signature="e#1149#1150#0" expanded="false" />
-            <element signature="e#1194#1195#0" expanded="false" />
-            <element signature="e#1243#1244#0" expanded="false" />
-            <element signature="e#1295#1296#0" expanded="false" />
-            <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
-            <element signature="e#6288#6289#0" expanded="false" />
-            <element signature="e#6332#6333#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6967655">
-          <caret line="382" column="19" selection-start-line="382" selection-start-column="19" selection-end-line="382" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="350" column="6" selection-start-line="350" selection-start-column="6" selection-end-line="356" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#1734#1735#0" expanded="true" />
@@ -1199,6 +1097,17 @@
             <element signature="e#8754#8755#0" expanded="true" />
             <element signature="e#9423#9424#0" expanded="true" />
             <element signature="e#9459#9460#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/csc560/pa1client/Client.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4541779">
+          <caret line="99" column="39" selection-start-line="99" selection-start-column="39" selection-end-line="99" selection-end-column="39" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#readIncomingMessage#0;class#GridButtonPanel#0;class#Client#0" expanded="false" />
           </folding>
         </state>
       </provider>

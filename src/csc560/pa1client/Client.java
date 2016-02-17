@@ -17,13 +17,6 @@ import java.util.Scanner;
 
 public class Client{
 
-//    int[][] board = buildNewBoard();
-//    GridButtonPanel gridButtonPanel;
-//
-//    /**
-//     * @see http://stackoverflow.com/questions/7702697
-//     */
-
     public static class GridButtonPanel {
 
         private class BoardSpace{
@@ -81,10 +74,8 @@ public class Client{
         void run()
         {
             try{
-//            GridLayout experimentLayout = new GridLayout(0,2);
-                //1. creating a socket to connect to the server
-//                gridButtonPanel = new GridButtonPanel();
-//                gridButtonPanel.display();
+                disableEnableAllNonUsedButtons(board, false);
+
                 while (requestSocket == null) {
                     try {
                         requestSocket = new Socket("localhost", 7788);
@@ -105,6 +96,7 @@ public class Client{
                 //send the initial message
                 String initialMessage =readIncomingMessage(in);
                 if (initialMessage.equalsIgnoreCase("NONE")){
+                    disableEnableAllNonUsedButtons(board, true);
                     while (shouldWaitForUserInput){
 //                    System.out.println("waiting: "+shouldWaitForUserInput);
                     }
@@ -115,7 +107,7 @@ public class Client{
                     processMove(initialMessage, board,SERVER_ID);
                     System.out.println("Get the first server move");
                     printBoard(board);
-                    System.out.println("Get the second user move");
+                    System.out.println("Get the second us   er move");
                     shouldWaitForUserInput = true;
                     while (shouldWaitForUserInput){
 //                    System.out.println("waiting: "+shouldWaitForUserInput);
@@ -245,10 +237,7 @@ public class Client{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            Writer writer = new BufferedWriter(out, "UTF-8");
-//            out.writeObject(msg);
-//            out.flush();
-//            System.out.println("client>" + msg);
+
 
         }
 
@@ -312,6 +301,22 @@ public class Client{
             this.run();
         }
 
+        public void disableEnableAllNonUsedButtons(int[][] board, boolean onOff){
+            for(int i = 0; i < board.length; i++ ){
+                for (int j = 0; j < board[0].length; j++){
+                    JButton button = this.getGridButton(i,j);
+                    if (onOff) {
+//                        button = this.getGridButton(i,j);
+                            button.setEnabled(board[i][j] != 0 ? !onOff : onOff );
+                    } else{
+                        button.setEnabled(board[i][j] == 0 ? onOff : !onOff );
+                    }
+//                        results.add(new BoardSpace(i, j));
+
+                }
+            }
+        }
+
 
     }
 
@@ -320,33 +325,7 @@ public class Client{
 
     public static void main(String args[])
     {
-//        JFrame.setDefaultLookAndFeelDecorated(true)
-//// int i = 3;
-//        int j = 4;
-//        JPanel[][] panelHolder = new JPanel[i][j];
-//
-//        for(int m = 0; m < i; m++) {
-//            for(int n = 0; n < j; n++) {
-//                panelHolder[m][n] = new JPanel();
-//                add(panelHolder[m][n]);
-//            }
-//        };
-//        JFrame frame = new JFrame("GridLayout Test");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        fra
 
-//        frame.setLayout(new GridLayout(3, 3));
-//        frame.add(new JButton("Button 1"));
-//        frame.add(new JButton("Button 2"));
-//        frame.add(new JButton("Button 3"));
-//        frame.add(new JButton("Button 4"));
-//        frame.add(new JButton("Button 5"));
-//        frame.add(new JButton("Button 6"));
-//        frame.add(new JButton("Button 7"));
-//        frame.add(new JButton("Button 8"));
-//        frame.pack();
-//        frame.setVisible(true);
-//        Client client = new Client();
         GridButtonPanel gpb = new GridButtonPanel();
         gpb.display();
     }
