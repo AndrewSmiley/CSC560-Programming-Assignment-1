@@ -264,14 +264,16 @@ public class Server{
             if (i < BOARD_ROWS){
                 //now the columns
                 for(int j = i; j < BOARD_ROWS; j++){
-
+//                    int currentOwner = 0;
                     for(int k = 0; k < BOARD_ROWS; k++){
-                        totalScore = totalScore + boardSpace.get(k+(k*BOARD_ROWS)).getOwner();
+//                        currentOwner = k;
+                        totalScore = totalScore + boardSpace.get(j+(k*BOARD_ROWS)).getOwner();
 
                     }
                     if (totalScore == boardSpace.get(i+j).getOwner()*BOARD_ROWS &&  totalScore != 0){
                         return boardSpace.get(i+j).getOwner();
                     }
+                    totalScore=0;
                 }
                 totalScore=0;
 
@@ -468,11 +470,19 @@ public class Server{
     public static void main(String args[])
     {
 //        //ok let's test this
-//        Server s = new Server();
-//        int[][] board = s.buildNewBoard();
-////        board[0][0] = s.SERVER_ID;
-//        board[0][2] = s.CLIENT_ID;
-//        board[1][1] = s.CLIENT_ID;
+        Server s = new Server();
+        int[][] board = s.buildNewBoard();
+//        board[0][0] = s.CLIENT_ID;
+        board[0][2] = s.CLIENT_ID;
+//        board[1][0] = s.CLIENT_ID;
+        board[1][1] = s.CLIENT_ID;
+//        board[1][2] = s.CLIENT_ID;
+        board[1][0] = s.SERVER_ID;
+        board[0][1] = s.SERVER_ID;
+        int winner = s.determineWinner(board);
+//        board[2][2] = s.SERVER_ID;
+//        BoardSpace space = s.minimax(0, s.SERVER_ID,board);
+
 ////        BoardSpace bo
 ////        board[2][0] = s.CLIENT_ID;
 //        System.out.println(s.generateMoveValue(s.test(2,0), board, s.CLIENT_ID));
@@ -610,7 +620,6 @@ public class Server{
         }
 
     }
-
 
 
     int generateMoveValue(BoardSpace space, int[][] board, int player){
@@ -1338,35 +1347,119 @@ public class Server{
 //
 //
 //    }
-    BoardSpace minimax(int depth, int player, int[][] board) {
-        depth++;
+
+    ArrayList<BoardSpace> cMoves = new ArrayList<BoardSpace>();
+    int minimaxScore(int depth, int player, int[][] board, BoardSpace space, int minimaxScore) {
+
         ArrayList<BoardSpace> possibleMoves = generateGameState(board);
         //base case
         if (possibleMoves.size() == 1) {
             int[][] tmpBoard = fuckYouJavaCopyBoard(board);
             tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
+            System.out.println("Final state reached\n\n");
+            printBoard(tmpBoard);
+            System.out.println("Final state reached\n\n");
             int winner = determineWinner(tmpBoard);
             if(winner == player) {
-                possibleMoves.get(0).setTotalScore(10-depth);
-                return possibleMoves.get(0);
+                return depth-10;
+
+//                return possibleMoves.get(0);
             }else if (winner == getOppositePlayer(player)){
-                possibleMoves.get(0).setTotalScore((depth-10));
-                return possibleMoves.get(0);
-            }else{
+
+                return (10-depth);
+            }
+//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore()+(depth-10));
+//                return possibleMoves.get(0);
+            else{
 
 //                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
-                possibleMoves.get(0).setTotalScore(0);
-                return possibleMoves.get(0);
+//                possibleMoves.get(0).setTotalScore(0);
+                return 0;
+//                return possibleMoves.get(0);
 // .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
             }
+        }
+        depth++;
 
+
+//        }
+        ArrayList<BoardSpace> calculatedMoves = new ArrayList<BoardSpace>();
+
+        for (BoardSpace s: possibleMoves) {
+            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+            tmpBoard[space.row][space.column] = getOppositePlayer(player);
+
+            if(determineWinner(tmpBoard) == getOppositePlayer(player)){
+                return (10-depth);
+            }
+            tmpBoard[space.row][space.column] = player;
+            if(determineWinner(tmpBoard) == player){
+                return  depth-10;
+
+            }
+                s.setTotalScore(minimaxScore(depth, getOppositePlayer(player), tmpBoard,s, 0));
+            calculatedMoves.add(s);
 
         }
+        Collections.sort(calculatedMoves,new Comparator<BoardSpace>() {
+            @Override
+            public int compare(BoardSpace o1, BoardSpace o2) {
+
+                return new Integer(o2.getTotalScore()).compareTo(new Integer(o1.getTotalScore()));
+            }
+        });
+        if(player == CLIENT_ID){
+            return calculatedMoves.get(calculatedMoves.size()-1).getTotalScore();
+        }else{
+            return calculatedMoves.get(0).getTotalScore();
+        }
+
+    }
+    BoardSpace minimax(int depth, int player, int[][] board) {
+//        depth++;
+        ArrayList<BoardSpace> possibleMoves = generateGameState(board);
+//        //base case
+//        if (possibleMoves.size() == 1) {
+//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+//            tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
+//            System.out.println("Final state reached\n\n");
+//            printBoard(tmpBoard);
+//            System.out.println("Final state reached\n\n");
+//            int winner = determineWinner(tmpBoard);
+//            if(winner == player) {
+//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore()+10-depth);
+//                return possibleMoves.get(0);
+//            }else if (winner == getOppositePlayer(player)){
+//                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore()+(depth-10));
+//                return possibleMoves.get(0);
+//            }else{
+//
+////                possibleMoves.get(0).setTotalScore(possibleMoves.get(0).getTotalScore());
+////                possibleMoves.get(0).setTotalScore(0);
+//                return possibleMoves.get(0);
+//// .setTotalScore(possibleMoves.get(0).getTotalScore() -depth);
+//            }
+//
+//
+//        }
         ArrayList<BoardSpace> calculatedMoves = new ArrayList<BoardSpace>();
         for (BoardSpace space: possibleMoves) {
-            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
-            tmpBoard[space.row][space.column] = player;
-            calculatedMoves.add(minimax(depth, getOppositePlayer(player), tmpBoard));
+//            int[][] tmpBoard = fuckYouJavaCopyBoard(board);
+//            tmpBoard[space.row][space.column] = player;
+//            int possibleWinner = determineWinner(tmpBoard);
+//            if (possi1bleWinner == player){
+//                space.setTotalScore(10 - depth);
+//                calculatedMoves.add(space);
+//                continue;
+//            }else if (possibleWinner == getOppositePlayer(player)){
+//                space.setTotalScore(depth - 10);
+//                calculatedMoves.add(space);
+//                continue;
+//            }else {
+//            printBoard(tmpBoard);
+                space.setTotalScore(minimaxScore(depth, player, board, space, 0));
+                calculatedMoves.add(space);
+//            }
         }
         Collections.sort(calculatedMoves,new Comparator<BoardSpace>() {
                              @Override
@@ -1376,8 +1469,18 @@ public class Server{
                              }
                          });
 
+//    return calculatedMoves.get(0);
 //        return calculatedMoves.get(calculatedMoves.size()-1);
+        cMoves = calculatedMoves;
         return calculatedMoves.get(0);
+//        if(Math.abs(calculatedMoves.get(0).getTotalScore()) <= Math.abs(calculatedMoves.get(calculatedMoves.size()-1).getTotalScore())){
+//            return calculatedMoves.get(calculatedMoves.size()-1);
+//        }else  if(Math.abs(calculatedMoves.get(0).getTotalScore()) == Math.abs(calculatedMoves.get(calculatedMoves.size()-1).getTotalScore())){
+//            return calculatedMoves.get(calculatedMoves.size()-1);
+//        }else{
+//            return calculatedMoves.get(0);
+//        }
+//        return
 
 //        return new BoardSpace();
     }
