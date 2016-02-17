@@ -22,10 +22,12 @@ public class Server{
     final int CLIENT_WIN_FLAG=CLIENT_ID;
     final int SERVER_WIN_FLAG=SERVER_ID;
     final int TIE_FLAG = CLIENT_ID+SERVER_ID;
-    final int MINIMAX_WIN_FLAG = 6969;
     final int EMPTY_ROW = 123456;
     Server(){}
 
+    /**
+     * Class to represent a space on the board
+     */
     private class BoardSpace{
         int row,column, serverWeight, clientWeight,owner, totalScore;
 
@@ -91,6 +93,12 @@ public class Server{
         }
     }
 
+    public static void main(String args[])
+    {
+        Server server = new Server();
+        server.run();
+    }
+
     void acceptNonBlockingConnection(LinkedList<SocketChannel> connections, ServerSocketChannel ssc){
         SocketChannel throwAway = null;
         try {
@@ -100,6 +108,7 @@ public class Server{
         }
         if (throwAway != null){
             connections.add(throwAway);
+            System.out.println("Accepted new connection and added to queue.");
         }
     }
 
@@ -143,6 +152,7 @@ public class Server{
                   boolean gameRunning = true;
                   Socket connection = sc.socket();
                   System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+                  acceptNonBlockingConnection(connections, ssc);
                   Random rand = new Random();
                   int randomNum = rand.nextInt((100 - 1) + 1) + 1;
                   //if it's an even number let the server move first, otherwise let the client go first
@@ -163,10 +173,11 @@ public class Server{
                       if (processMove((String) in.readObject(),board, CLIENT_ID )){
                           break;
                       }
+                      acceptNonBlockingConnection(connections, ssc);
                       if(executeServerMove(board)){
                           break;
                       }
-
+                      acceptNonBlockingConnection(connections, ssc);
                       if (generateGameState(board).size() == 0) {
                           gameRunning = false;
                       }
@@ -278,14 +289,7 @@ public class Server{
 
 
     }
-    BoardSpace test(int row, int col){
-        return new BoardSpace(row,col);
-    }
-    public static void main(String args[])
-    {
-        Server server = new Server();
-        server.run();
-    }
+
 
     void printBoard(int[][] board){
         for (int i =0; i <3;i++){
@@ -418,9 +422,9 @@ public class Server{
         if (possibleMoves.size() == 1) {
             int[][] tmpBoard = fuckYouJavaCopyBoard(board);
             tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] =player;
-            System.out.println("Final state reached\n\n");
-            printBoard(tmpBoard);
-            System.out.println("Final state reached\n\n");
+//            System.out.println("Final state reached\n\n");
+//            printBoard(tmpBoard);
+//            System.out.println("Final state reached\n\n");
             int winner = determineWinner(tmpBoard);
             if(winner == player) {
                 return depth-10;

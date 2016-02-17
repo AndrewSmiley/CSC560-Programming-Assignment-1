@@ -1,6 +1,7 @@
 package csc560.pa1client;
 
-import java.awt.EventQueue;
+import com.sun.codemodel.internal.JOp;
+
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,14 +11,26 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
 public class Client{
 
-    public static class GridButtonPanel {
+    public static class BoardGUI {
+
+        Socket requestSocket;
+        ObjectOutputStream out;
+        ObjectInputStream in;
+        String message;
+        int CLIENT_ID = 666;
+        int SERVER_ID = 777;
+        static volatile boolean shouldWaitForUserInput = false;
+        static final Object lock = new Object();
+        int[][] board = buildNewBoard();
+        private static final int N = 3;
+        private final List<JButton> list = new ArrayList<JButton>();
+        private JFrame f;
 
         private class BoardSpace{
             int row;
@@ -51,19 +64,12 @@ public class Client{
         }
 
 
-        Socket requestSocket;
-        ObjectOutputStream out;
-        ObjectInputStream in;
-        String message;
-//        Client(){}
-        int CLIENT_ID = 666;
-        int SERVER_ID = 777;
-        static volatile boolean shouldWaitForUserInput = false;
-        static final Object lock = new Object();
-        int[][] board = buildNewBoard();
-        private static final int N = 3;
-        private final List<JButton> list = new ArrayList<JButton>();
-
+        /**
+         * Update button text
+         * @param row
+         * @param column
+         * @param player
+         */
         void updateButton(int row, int column, int player){
             JButton button = this.getGridButton(row,column);
             if (player==SERVER_ID){
@@ -71,10 +77,15 @@ public class Client{
                 button.setEnabled(false);
             }
         }
+
+        /**
+         * Run the client
+         */
         void run()
         {
             try{
                 disableEnableAllNonUsedButtons(board, false);
+
 
                 while (requestSocket == null) {
                     try {
@@ -83,36 +94,39 @@ public class Client{
                         e.printStackTrace();
                     }
                 }
-//            requestSocket.getInputStream()
+                JOptionPane.showMessageDialog(null, "Connection Established");
+                this.f.setTitle("Waiting On Server Move");
                 System.out.println("Connected to localhost in port 7788");
                 Thread t = Thread.currentThread();
                 String name = t.getName();
                 System.out.println("Current thread name: " + name);
-//                Thread.sleep(2000);
-                //2. get Input and Output streams
+
                 out = new ObjectOutputStream(requestSocket.getOutputStream());
                 in = new ObjectInputStream(requestSocket.getInputStream());
 
-                //send the initial message
+                //get the initial message
                 String initialMessage =readIncomingMessage(in);
+
                 if (initialMessage.equalsIgnoreCase("NONE")){
                     disableEnableAllNonUsedButtons(board, true);
+                    this.f.setTitle("Waiting On Your move");
+                    shouldWaitForUserInput = true;
                     while (shouldWaitForUserInput){
-//                    System.out.println("waiting: "+shouldWaitForUserInput);
                     }
                     System.out.println("Get the first user move");
-
+                    this.f.setTitle("Waiting On Server move");
 
                 }else{
                     disableEnableAllNonUsedButtons(board, false);
+                    this.f.setTitle("Waiting On Server move");
                     processMove(initialMessage, board,SERVER_ID);
                     System.out.println("Get the first server move");
                     printBoard(board);
+                    this.f.setTitle("Waiting On Your move");
                     System.out.println("Get the second us   er move");
                     disableEnableAllNonUsedButtons(board, true);
                     shouldWaitForUserInput = true;
                     while (shouldWaitForUserInput){
-//                    System.out.println("waiting: "+shouldWaitForUserInput);
                     }
                     System.out.println("Got the second user move");
                 }
@@ -127,15 +141,16 @@ public class Client{
                         processEndOfGame(message);
                         break;
                     }
-                    System.out.println("Get the server move");
+                    System.out.println("Get the Server move");
+                    this.f.setTitle("Waiting On Your move");
                     processMove(message, board, SERVER_ID);
 
                     printBoard(board);
                     System.out.println("Get the client move");
                     disableEnableAllNonUsedButtons(board, true);
+                    this.f.setTitle("Waiting On Server move");
                     shouldWaitForUserInput = true;
                     while (shouldWaitForUserInput){
-//                        System.out.println("waiting: "+shouldWaitForUserInput);
                     }
 
 
@@ -159,6 +174,11 @@ public class Client{
             }
         }
 
+        /**
+         * Read an incoming message to a string
+         * @param in
+         * @return
+         */
         String readIncomingMessage(ObjectInputStream in){
             try {
                 return (String) in.readObject();
@@ -172,15 +192,30 @@ public class Client{
 
         }
 
+        /**
+         * Get the the client action (user button click)
+         * @param board
+         * @param space
+         */
         void processClientAction(int[][] board, BoardSpace space){
 //        BoardSpace space = getUserInput();
             board[space.row][space.column]= CLIENT_ID;
             sendMessage("MOVE "+space.row+" "+space.column);
             shouldWaitForUserInput = false;
         }
+
+        /**
+         * Build a new board
+         * @return
+         */
         int[][] buildNewBoard(){
             return new int[3][3];
         }
+
+        /**
+         * Print the board state
+         * @param board
+         */
         void printBoard(int[][] board){
             for (int i =0; i <3;i++){
                 String row = "";
@@ -220,15 +255,11 @@ public class Client{
                 return;
             }
         }
-        BoardSpace getUserInput(){
-            Scanner scan= new Scanner(System.in);
-            System.out.print("Enter the row: ");
-            int row= scan.nextInt();
-            System.out.print("Enter the column: ");
-            int column= scan.nextInt();
-            return new BoardSpace(row, column);
 
-        }
+        /**
+         * Send a message to the server
+         * @param msg
+         */
         void sendMessage(String msg)
         {
 
@@ -246,11 +277,11 @@ public class Client{
         void processEndOfGame(String message){
             printBoard(board);
             if (message.contains("WIN")){
-                System.out.println("You win buttfucker");
+                JOptionPane.showMessageDialog(null, "You win. You must have cheated.");
             }else if (message.contains("LOSS")){
-                System.out.println("You lose buttfucker");
+                JOptionPane.showMessageDialog(null, "You lose. You cannot defeat the Minimax Algorithm");
             }else if (message.contains("TIE")){
-                System.out.println("You tie buttfucker");
+                JOptionPane.showMessageDialog(null, "You Tie. You cannot defeat the Minimax Algorithm");
             }
             System.exit(0);
         }
@@ -265,11 +296,11 @@ public class Client{
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("button clicked");
-                    JButton gb = GridButtonPanel.this.getGridButton(row, col);
+                    JButton gb = BoardGUI.this.getGridButton(row, col);
                     gb.setText("O");
                     gb.setEnabled(false);
                     System.out.println("We changed the value from ");
-                    GridButtonPanel.shouldWaitForUserInput = false;
+                    BoardGUI.shouldWaitForUserInput = false;
                     Thread t = Thread.currentThread();
                     String name = t.getName();
                     System.out.println("Current thread name: " + name);
@@ -294,13 +325,14 @@ public class Client{
         }
 
         private void display() {
-            JFrame f = new JFrame("GridButton");
+            f = new JFrame("GridButton");
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             f.add(createGridPanel());
             f.pack();
             f.setLocationRelativeTo(null);
             f.setVisible(true);
             this.run();
+
         }
 
         public void disableEnableAllNonUsedButtons(int[][] board, boolean onOff){
@@ -332,7 +364,7 @@ public class Client{
     public static void main(String args[])
     {
 
-        GridButtonPanel gpb = new GridButtonPanel();
+        BoardGUI gpb = new BoardGUI();
         gpb.display();
     }
 }
