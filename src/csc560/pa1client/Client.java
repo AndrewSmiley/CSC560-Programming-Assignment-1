@@ -88,7 +88,7 @@ public class Client{
                 Thread t = Thread.currentThread();
                 String name = t.getName();
                 System.out.println("Current thread name: " + name);
-                Thread.sleep(2000);
+//                Thread.sleep(2000);
                 //2. get Input and Output streams
                 out = new ObjectOutputStream(requestSocket.getOutputStream());
                 in = new ObjectInputStream(requestSocket.getInputStream());
@@ -104,10 +104,12 @@ public class Client{
 
 
                 }else{
+                    disableEnableAllNonUsedButtons(board, false);
                     processMove(initialMessage, board,SERVER_ID);
                     System.out.println("Get the first server move");
                     printBoard(board);
                     System.out.println("Get the second us   er move");
+                    disableEnableAllNonUsedButtons(board, true);
                     shouldWaitForUserInput = true;
                     while (shouldWaitForUserInput){
 //                    System.out.println("waiting: "+shouldWaitForUserInput);
@@ -119,6 +121,7 @@ public class Client{
                 //3: Communicating with the server
                 while(true){
                     System.out.println("begin looping");
+                    disableEnableAllNonUsedButtons(board, false);
                     message = readIncomingMessage(in);
                     if (message.contains("WIN") || message.contains("LOSS") || message.contains("TIE")){
                         processEndOfGame(message);
@@ -129,6 +132,7 @@ public class Client{
 
                     printBoard(board);
                     System.out.println("Get the client move");
+                    disableEnableAllNonUsedButtons(board, true);
                     shouldWaitForUserInput = true;
                     while (shouldWaitForUserInput){
 //                        System.out.println("waiting: "+shouldWaitForUserInput);
@@ -142,8 +146,6 @@ public class Client{
             }
             catch(IOException ioException){
                 ioException.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             } finally{
                 //4: Closing connection
                 try{
@@ -305,12 +307,16 @@ public class Client{
             for(int i = 0; i < board.length; i++ ){
                 for (int j = 0; j < board[0].length; j++){
                     JButton button = this.getGridButton(i,j);
-                    if (onOff) {
-//                        button = this.getGridButton(i,j);
-                            button.setEnabled(board[i][j] != 0 ? !onOff : onOff );
-                    } else{
-                        button.setEnabled(board[i][j] == 0 ? onOff : !onOff );
-                    }
+//                    if (onOff) {
+////                        button = this.getGridButton(i,j);
+
+                            if(board[i][j] == 0){
+                                button.setEnabled(onOff);
+                            }
+//                            button.setEnabled(board[i][j] != 0 ? !onOff : onOff );
+//                    } else{
+//                        button.setEnabled(board[i][j] == 0 ? onOff : onOff );
+//                    }
 //                        results.add(new BoardSpace(i, j));
 
                 }
