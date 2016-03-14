@@ -12,6 +12,44 @@ import java.util.*;
 //http://www.java2s.com/Tutorial/Java/0320__Network/TestnonblockingacceptusingServerSocketChannel.htm
 public class Server {
 
+
+    class Counter{
+        public Counter() {
+            this.wins = 0;
+            this.ties = 0;
+            this.losses = 0;
+        }
+
+        int wins;
+        int losses;
+        int ties;
+        public int getWins() {
+            return wins;
+        }
+
+        public void setWins(int wins) {
+            this.wins = wins;
+        }
+
+        public int getLosses() {
+            return losses;
+        }
+
+        public void setLosses(int losses) {
+            this.losses = losses;
+        }
+
+        public int getTies() {
+            return ties;
+        }
+
+        public void setTies(int ties) {
+            this.ties = ties;
+        }
+
+    }
+
+
     class ServerThread implements Runnable {
 
         @Override
@@ -52,36 +90,6 @@ public class Server {
                     //exit CS
                 }
             }
-//            SocketChannel sc = null;
-//            if (connections.size() == 0) {
-//                //if we don't have any queued connections
-//                try {
-//                    sc = ssc.accept();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                //if it's null, we want to wait till we get an incoming conneciton
-//                if(sc == null){
-//                    while (sc == null){
-//                        try {
-//                            Thread.sleep(2000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            sc= ssc.accept();
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                        System.out.println((sc == null) ? "Waiting for connection": "Accepted new incoming connection");
-//                    }
-//                }
-//            }else{
-//                //otherwise grab it off the queue
-//                sc = connections.pop();
-//                System.out.println("Grabbed connection from Queue");
-//
-//            }
         }
     }
 
@@ -189,8 +197,12 @@ public class Server {
         }
     }
 
-    void run() {
+    void printStatistics(Counter counter){
+        System.out.println("\nWins: "+counter.getWins()+"\nLosses: "+counter.getLosses()+"\nTies: "+counter.getTies());
 
+    }
+    void run() {
+        Counter counter = new Counter();
         //start the thread
         Thread t = new Thread(new ServerThread());
         t.start();
@@ -198,10 +210,10 @@ public class Server {
             try {
 //              System.out.println("Waiting for connection");
                 while (true) {
-
+                    printStatistics(counter);
                     SocketChannel sc = null;
                     while (connections.size() < 1) {
-                        System.out.println("No connections available... zzzz....");
+//                        System.out.println("No connections available... zzzz....");
                         Thread.sleep(1000);
                     }
                     if (lock) {
@@ -248,17 +260,17 @@ public class Server {
                     if (!serverTurn) {
                         sendMessage("NONE");
                     } else {
-                        executeServerMove(board);
+                        executeServerMove(board, counter);
                     }
                     in = new ObjectInputStream(connection.getInputStream());
                     while (gameRunning) {
                         //just each time through check for a new conneciton
 //                      acceptNonBlockingConnection(connections, ssc);
-                        if (processMove((String) in.readObject(), board, CLIENT_ID)) {
+                        if (processMove((String) in.readObject(), board, CLIENT_ID, counter)) {
                             break;
                         }
 //                      acceptNonBlockingConnection(connections, ssc);
-                        if (executeServerMove(board)) {
+                        if (executeServerMove(board,counter)) {
                             break;
                         }
 //                      acceptNonBlockingConnection(connections, ssc);
@@ -403,7 +415,7 @@ public class Server {
      * @param player
      * @return
      */
-    boolean processMove(String move, int[][] board, int player) {
+    boolean processMove(String move, int[][] board, int player, Counter counter) {
         String[] tmp = move.split(" ");
         try {
             int row = Integer.parseInt(tmp[1]);
@@ -414,6 +426,14 @@ public class Server {
 
                 if (generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW) {
                     sendMessage("MOVE " + row + " " + column + " " + getEndGameMessageAction(determineWinner(board)));
+                    //this is inefficient but i give NO fucks
+                    if(determineWinner(board) == SERVER_ID){
+                        counter.setWins(counter.getWins()+1);
+                    }else if(determineWinner(board) == CLIENT_ID){
+                        counter.setLosses(counter.getLosses()+1);
+                    }else{
+                        counter.setTies(counter.getTies()+1);
+                    }
                     return true;
                 } else {
                     return false;
@@ -451,12 +471,19 @@ public class Server {
      * @param board the current board state
      * @return boolean wheter the game neded nor not
      */
-    boolean executeServerMove(int[][] board) {
+    boolean executeServerMove(int[][] board,Counter counter) {
         BoardSpace space = minimax(0, SERVER_ID, board);
         System.out.println("Chose move with value " + space.getTotalScore() + " at position " + space.getRow() + " " + space.getColumn());
         board[space.row][space.column] = SERVER_ID;
         if (generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW) {
             sendMessage("MOVE " + space.row + " " + space.column + " " + getEndGameMessageAction(determineWinner(board)));
+            if(determineWinner(board) == SERVER_ID){
+                counter.setWins(counter.getWins()+1);
+            }else if(determineWinner(board) == CLIENT_ID){
+                counter.setLosses(counter.getLosses()+1);
+            }else{
+                counter.setTies(counter.getTies()+1);
+            }
             return true;
         } else {
             sendMessage("MOVE " + space.row + " " + space.column);
