@@ -50,7 +50,7 @@ public class Server {
     }
 
 
-    class ServerThread implements Runnable {
+    public class ServerThread implements Runnable {
 
         @Override
         public void run() {
@@ -65,8 +65,9 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            System.out.println("Listening for new connecitons... ");
             while (true) {
+
                 SocketChannel throwAway = null;
                 try {
                     throwAway = ssc.accept();
@@ -75,25 +76,30 @@ public class Server {
                 }
                 if (throwAway != null) {
                     //here's the CS
-                    if (lock) {
-                        //don't sleep the thread, just hold till we get access to the resource again
-                        while (lock) {
-                            ;
-                        }
-                    }
-                    lock = true;
-                    System.out.println("Size of connections before: "+ connections.size());
-                    connections.add(throwAway);
-                    System.out.println("Accepted new connection and added to queue.");
-                    System.out.println("Size of connections after: "+ connections.size());
-                    lock = false;
+//                    if (lock) {
+//                        //don't sleep the thread, just hold till we get access to the resource again
+//                        while (lock) {
+//                            ;
+//                        }
+//                    }
+//                    lock = true;
+//                    System.out.println("Size of connections before: "+ connections.size());
+                    //ok so this should be the easy fix.
+                    //just spawn a new thread each time we get a new connection
+                    //we can get rid of this lock stuff though.
+                    Thread t = new Thread(new ServerGame(throwAway));
+                    t.start();
+//                    connections.add(throwAway);
+                    System.out.println("Accepted new connection and started new game");
+//                    System.out.println("Size of connections after: "+ connections.size());
+//                    lock = false;
                     //exit CS
                 }
             }
         }
     }
 
-    static volatile boolean lock = false;
+    static volatile boolean counteSemaphore = false;
     ServerSocket providerSocket;
     ObjectOutputStream out;
     ObjectInputStream in;
@@ -179,11 +185,80 @@ public class Server {
         }
     }
 
+    public class ServerGame implements Runnable{
+        SocketChannel sc;
+
+        public ServerGame(SocketChannel sc) {
+            this.sc = sc;
+        }
+
+        @Override
+        public void run() {
+            Counter counter = new Counter();
+            //start the thread
+//            Thread t = new Thread(new ServerThread());
+//            t.start();
+            while (true) {
+                try {
+//              System.out.println("Waiting for connection");
+                    while (true) {
+                        printStatistics(counter);
+//                        SocketChannel sc = null;
+                        while (connections.size() < 1) {
+//                        System.out.println("No connections available... zzzz....");
+                            Thread.sleep(1000);
+                        }
+                        boolean gameRunning = true;
+                        Socket connection = sc.socket();
+                        System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+//                  acceptNonBlockingConnection(connections, ssc);
+                        Random rand = new Random();
+                        int randomNum = rand.nextInt((100 - 1) + 1) + 1;
+                        //if it's an even number let the server move first, otherwise let the client go first
+                        boolean serverTurn = randomNum % 2 == 0;
+                        int[][] board = buildNewBoard();
+                        out = new ObjectOutputStream(connection.getOutputStream());
+                        out.flush();
+
+                        if (!serverTurn) {
+                            sendMessage("NONE");
+                        } else {
+                            executeServerMove(board, counter);
+                        }
+                        in = new ObjectInputStream(connection.getInputStream());
+                        while (gameRunning) {
+                            //just each time through check for a new conneciton
+//                      acceptNonBlockingConnection(connections, ssc);
+                            if (processMove((String) in.readObject(), board, CLIENT_ID, counter)) {
+                                break;
+                            }
+//                      acceptNonBlockingConnection(connections, ssc);
+                            if (executeServerMove(board,counter)) {
+                                break;
+                            }
+//                      acceptNonBlockingConnection(connections, ssc);
+                            if (generateGameState(board).size() == 0) {
+                                gameRunning = false;
+                            }
+                        }
+                    }
+                } catch (Exception ioException) {
+                    ioException.printStackTrace();
+
+                }
+            }
+        }
+    }
     public static void main(String args[]) {
-        Server server = new Server();
-        server.run();
+        Server s = new Server();
+            s.doShit();
+//        server.run();
     }
 
+    void doShit(){
+        Thread t = new Thread (new ServerThread());
+        t.start();
+    }
     void acceptNonBlockingConnection(LinkedList<SocketChannel> connections, ServerSocketChannel ssc) {
         SocketChannel throwAway = null;
         try {
@@ -201,90 +276,90 @@ public class Server {
         System.out.println("\nWins: "+counter.getWins()+"\nLosses: "+counter.getLosses()+"\nTies: "+counter.getTies());
 
     }
-    void run() {
-        Counter counter = new Counter();
-        //start the thread
-        Thread t = new Thread(new ServerThread());
-        t.start();
-        while (true) {
-            try {
-//              System.out.println("Waiting for connection");
-                while (true) {
-                    printStatistics(counter);
-                    SocketChannel sc = null;
-                    while (connections.size() < 1) {
-//                        System.out.println("No connections available... zzzz....");
-                        Thread.sleep(1000);
-                    }
-                    if (lock) {
-                        //wait till hte other thread exits CS
-                        while (lock) {
-                            ;
-                        }
-                    } else {
-                        //enter the CS
-                        lock = true;
-                        sc = connections.pop();
-                        System.out.println("Grabbed connection from Queue");
-                        lock = false;
-                    }
-//                  if (connections.size() == 0) {
-//                      //if we don't have any queued connections
-//                      sc = ssc.accept();
-//                      //if it's null, we want to wait till we get an incoming conneciton
-//                      if(sc == null){
-//                          while (sc == null){
-//                              Thread.sleep(2000);
-//                              sc= ssc.accept();
-//                              System.out.println((sc == null) ? "Waiting for connection": "Accepted new incoming connection");
-//                          }
-//                      }
-//                  }else{
-//                      //otherwise grab it off the queue
-//                      sc = connections.pop();
-//                      System.out.println("Grabbed connection from Queue");
+//    void run() {
+//        Counter counter = new Counter();
+//        //start the thread
+//        Thread t = new Thread(new ServerThread());
+//        t.start();
+//        while (true) {
+//            try {
+////              System.out.println("Waiting for connection");
+//                while (true) {
+//                    printStatistics(counter);
+//                    SocketChannel sc = null;
+//                    while (connections.size() < 1) {
+////                        System.out.println("No connections available... zzzz....");
+//                        Thread.sleep(1000);
+//                    }
+//                    if (lock) {
+//                        //wait till hte other thread exits CS
+//                        while (lock) {
+//                            ;
+//                        }
+//                    } else {
+//                        //enter the CS
+//                        lock = true;
+//                        sc = connections.pop();
+//                        System.out.println("Grabbed connection from Queue");
+//                        lock = false;
+//                    }
+////                  if (connections.size() == 0) {
+////                      //if we don't have any queued connections
+////                      sc = ssc.accept();
+////                      //if it's null, we want to wait till we get an incoming conneciton
+////                      if(sc == null){
+////                          while (sc == null){
+////                              Thread.sleep(2000);
+////                              sc= ssc.accept();
+////                              System.out.println((sc == null) ? "Waiting for connection": "Accepted new incoming connection");
+////                          }
+////                      }
+////                  }else{
+////                      //otherwise grab it off the queue
+////                      sc = connections.pop();
+////                      System.out.println("Grabbed connection from Queue");
+////
+////                  }
+//                    boolean gameRunning = true;
+//                    Socket connection = sc.socket();
+//                    System.out.println("Connection received from " + connection.getInetAddress().getHostName());
+////                  acceptNonBlockingConnection(connections, ssc);
+//                    Random rand = new Random();
+//                    int randomNum = rand.nextInt((100 - 1) + 1) + 1;
+//                    //if it's an even number let the server move first, otherwise let the client go first
+//                    boolean serverTurn = randomNum % 2 == 0;
+//                    int[][] board = buildNewBoard();
+//                    out = new ObjectOutputStream(connection.getOutputStream());
+//                    out.flush();
 //
-//                  }
-                    boolean gameRunning = true;
-                    Socket connection = sc.socket();
-                    System.out.println("Connection received from " + connection.getInetAddress().getHostName());
-//                  acceptNonBlockingConnection(connections, ssc);
-                    Random rand = new Random();
-                    int randomNum = rand.nextInt((100 - 1) + 1) + 1;
-                    //if it's an even number let the server move first, otherwise let the client go first
-                    boolean serverTurn = randomNum % 2 == 0;
-                    int[][] board = buildNewBoard();
-                    out = new ObjectOutputStream(connection.getOutputStream());
-                    out.flush();
-
-                    if (!serverTurn) {
-                        sendMessage("NONE");
-                    } else {
-                        executeServerMove(board, counter);
-                    }
-                    in = new ObjectInputStream(connection.getInputStream());
-                    while (gameRunning) {
-                        //just each time through check for a new conneciton
-//                      acceptNonBlockingConnection(connections, ssc);
-                        if (processMove((String) in.readObject(), board, CLIENT_ID, counter)) {
-                            break;
-                        }
-//                      acceptNonBlockingConnection(connections, ssc);
-                        if (executeServerMove(board,counter)) {
-                            break;
-                        }
-//                      acceptNonBlockingConnection(connections, ssc);
-                        if (generateGameState(board).size() == 0) {
-                            gameRunning = false;
-                        }
-                    }
-                }
-            } catch (Exception ioException) {
-                ioException.printStackTrace();
-
-            }
-        }
-    }
+//                    if (!serverTurn) {
+//                        sendMessage("NONE");
+//                    } else {
+//                        executeServerMove(board, counter);
+//                    }
+//                    in = new ObjectInputStream(connection.getInputStream());
+//                    while (gameRunning) {
+//                        //just each time through check for a new conneciton
+////                      acceptNonBlockingConnection(connections, ssc);
+//                        if (processMove((String) in.readObject(), board, CLIENT_ID, counter)) {
+//                            break;
+//                        }
+////                      acceptNonBlockingConnection(connections, ssc);
+//                        if (executeServerMove(board,counter)) {
+//                            break;
+//                        }
+////                      acceptNonBlockingConnection(connections, ssc);
+//                        if (generateGameState(board).size() == 0) {
+//                            gameRunning = false;
+//                        }
+//                    }
+//                }
+//            } catch (Exception ioException) {
+//                ioException.printStackTrace();
+//
+//            }
+//        }
+//    }
 
     ArrayList<BoardSpace> boardArrayToArrayList(int[][] board) {
         ArrayList<BoardSpace> b = new ArrayList<BoardSpace>();
