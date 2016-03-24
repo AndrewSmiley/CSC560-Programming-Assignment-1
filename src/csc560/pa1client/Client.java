@@ -83,6 +83,12 @@ public class Client{
          */
         void run()
         {
+            PrintWriter outWriter = null;
+            try {
+                outWriter = new PrintWriter(new BufferedWriter(new FileWriter(Thread.currentThread().getName().replace(" ","")+".txt", true)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             try{
                 disableEnableAllNonUsedButtons(board, false);
 
@@ -107,6 +113,7 @@ public class Client{
                 //get the initial message
                 String initialMessage =readIncomingMessage(in);
 
+                outWriter.println(initialMessage);
                 if (initialMessage.equalsIgnoreCase("NONE")){
                     disableEnableAllNonUsedButtons(board, true);
                     this.f.setTitle("Waiting On Your move");
@@ -136,7 +143,9 @@ public class Client{
                 while(true){
                     System.out.println("begin looping");
                     disableEnableAllNonUsedButtons(board, false);
+
                     message = readIncomingMessage(in);
+                    outWriter.println(message);
                     if (message.contains("WIN") || message.contains("LOSS") || message.contains("TIE")){
                         processEndOfGame(message);
                         break;
@@ -155,21 +164,26 @@ public class Client{
 
 
                 }
+                outWriter.close();
             }
             catch(UnknownHostException unknownHost){
                 System.err.println("You are trying to connect to an unknown host!");
+                outWriter.close();
             }
             catch(IOException ioException){
                 ioException.printStackTrace();
+                outWriter.close();
             } finally{
                 //4: Closing connection
                 try{
                     in.close();
                     out.close();
                     requestSocket.close();
+                    outWriter.close();
                 }
                 catch(IOException ioException){
                     ioException.printStackTrace();
+                    outWriter.close();
                 }
             }
         }
