@@ -50,50 +50,47 @@ public class Server {
     }
 
 
-    public class ServerThread implements Runnable {
-
-
-        @Override
-        public void run() {
-            //we need this part to start the server
-            ServerSocketChannel ssc = null;
-//            LinkedList<SocketChannel> connections = null;
-            try {
-                ssc = ServerSocketChannel.open();
-                ssc.socket().bind(new InetSocketAddress(7788));
-                ssc.configureBlocking(false);
-//                connections = new LinkedList<SocketChannel>();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Listening for new connecitons... ");
-            int numThreads = 1;
-            while (true) {
-
-                SocketChannel throwAway = null;
-                try {
-                    throwAway = ssc.accept();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (throwAway != null) {
-
-                    //ok so this should be the easy fix.
-                    //just spawn a new thread each time we get a new connection
-                    //we can get rid of this lock stuff though.
-                    Thread t = new Thread(new ServerGame(throwAway));
-                    t.setName("Game Thread "+numThreads);
-                    t.start();
-                    numThreads++;
-//                    connections.add(throwAway);
-                    System.out.println("Accepted new connection and started new game");
-//                    System.out.println("Size of connections after: "+ connections.size());
-//                    lock = false;
-                    //exit CS
-                }
-            }
-        }
-    }
+//    public class ServerThread implements Runnable {
+//
+//
+//        @Override
+//        public void run() {
+//            //we need this part to start the server
+//            ServerSocket listener = null;
+//            try {
+//                listener = new ServerSocket(7788);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//            System.out.println("Listening for new connecitons... ");
+//            int numThreads = 1;
+//            while (true) {
+//
+//                Socket throwAway = null;
+//                try {
+//                    throwAway = listener.accept();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                if (throwAway != null) {
+//
+//                    //ok so this should be the easy fix.
+//                    //just spawn a new thread each time we get a new connection
+//                    //we can get rid of this lock stuff though.
+//                    Thread t = new Thread(new ServerGame(throwAway));
+//                    t.setName("Game Thread "+numThreads);
+//                    t.start();
+//                    numThreads++;
+////                    connections.add(throwAway);
+//                    System.out.println("Accepted new connection and started new game");
+////                    System.out.println("Size of connections after: "+ connections.size());
+////                    lock = false;
+//                    //exit CS
+//                }
+//            }
+//        }
+//    }
 
     void wait(boolean semaphore){
         semaphore = true;
@@ -190,10 +187,10 @@ public class Server {
     }
 
     public class ServerGame implements Runnable{
-        SocketChannel sc;
+        Socket connection;
 
-        public ServerGame(SocketChannel sc) {
-            this.sc = sc;
+        public ServerGame(Socket sc) {
+            this.connection = sc;
         }
 
         @Override
@@ -216,7 +213,7 @@ public class Server {
 
                         outWriter.println("Starting new game");
                         boolean gameRunning = true;
-                        Socket connection = sc.socket();
+
                         System.out.println("Connection received from " + connection.getInetAddress().getHostName());
                         Random rand = new Random();
                         int randomNum = rand.nextInt((100 - 1) + 1) + 1;
@@ -257,16 +254,53 @@ public class Server {
 
         }
     }
-    public static void main(String args[]) {
-        Server s = new Server();
-            s.doShit();
-//        server.run();
-    }
 
-    void doShit(){
-        Thread t = new Thread (new ServerThread());
+    public void spawnNewGame(Socket s) {
+        Thread t = new Thread(new ServerGame(s));
+//        t.setName("Game Thread "+numThreads);
         t.start();
     }
+    public static void main(String args[]) {
+        //we need this part to start the server
+        Server s = new Server();
+        ServerSocket listener = null;
+        try {
+            listener = new ServerSocket(7788);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Listening for new connecitons... ");
+        int numThreads = 1;
+        while (true) {
+
+            Socket throwAway = null;
+            try {
+                throwAway = listener.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (throwAway != null) {
+
+                //ok so this should be the easy fix.
+                //just spawn a new thread each time we get a new connection
+                //we can get rid of this lock stuff though.
+                s.spawnNewGame(throwAway);
+                numThreads++;
+//                    connections.add(throwAway);
+                System.out.println("Accepted new connection and started new game");
+//                    System.out.println("Size of connections after: "+ connections.size());
+//                    lock = false;
+                //exit CS
+            }
+
+    }
+    }
+
+//    void doShit(){
+//        Thread t = new Thread (new ServerThread());
+//        t.start();
+//    }
     void acceptNonBlockingConnection(LinkedList<SocketChannel> connections, ServerSocketChannel ssc) {
         SocketChannel throwAway = null;
         try {

@@ -1,2 +1,13 @@
 NONE
 
+NONE
+MOVE 0 1
+
+MOVE 0 0
+
+NONE
+MOVE 1 1
+
+MOVE 0 0
+MOVE 0 2
+

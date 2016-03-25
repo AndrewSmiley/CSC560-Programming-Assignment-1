@@ -6,9 +6,12 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$2.class" afterPath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$2.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$BoardSpace.class" afterPath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$BoardSpace.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$ServerGame.class" afterPath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$ServerGame.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$ServerThread.class" afterPath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server$ServerThread.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server.class" afterPath="$PROJECT_DIR$/out/production/CSC-Programming-Assignment-1-Server/csc560/pa1server/Server.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/csc560/pa1client/Client.java" afterPath="$PROJECT_DIR$/src/csc560/pa1client/Client.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GameThread1.txt" afterPath="$PROJECT_DIR$/GameThread1.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/GameThread2.txt" afterPath="$PROJECT_DIR$/GameThread2.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.txt" afterPath="$PROJECT_DIR$/main.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/csc560/pa1server/Server.java" afterPath="$PROJECT_DIR$/src/csc560/pa1server/Server.java" />
     </list>
     <ignored path="CSC-Programming-Assignment-1-Server.iws" />
@@ -35,11 +38,12 @@
       <file leaf-file-name="Server.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.64828616">
-              <caret line="238" column="38" selection-start-line="238" selection-start-column="38" selection-end-line="238" selection-end-column="38" />
+            <state vertical-scroll-proportion="2.433681">
+              <caret line="289" column="17" selection-start-line="289" selection-start-column="17" selection-end-line="289" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+                <element signature="e#5056#5057#0" expanded="true" />
+                <element signature="e#5100#5101#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -50,18 +54,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="460" column="0" selection-start-line="460" selection-start-column="0" selection-end-line="460" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#48692#0" expanded="false" />
-                <element signature="imports" expanded="false" />
-                <element signature="e#4787#4788#0" expanded="false" />
-                <element signature="e#4813#4814#0" expanded="false" />
-                <element signature="e#4990#4991#0" expanded="false" />
-                <element signature="e#5030#5031#0" expanded="false" />
-                <element signature="e#5711#5712#0" expanded="false" />
-                <element signature="e#5749#5750#0" expanded="false" />
-                <element signature="e#44871#44872#0" expanded="false" />
-                <element signature="e#44918#44919#0" expanded="false" />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -636,8 +629,8 @@
     </list>
     <recent_temporary>
       <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Application.Server" />
-        <item index="1" class="java.lang.String" itemvalue="Application.Client" />
+        <item index="0" class="java.lang.String" itemvalue="Application.Client" />
+        <item index="1" class="java.lang.String" itemvalue="Application.Server" />
       </list>
     </recent_temporary>
   </component>
@@ -668,12 +661,12 @@
       <workItem from="1456451637376" duration="346000" />
       <workItem from="1457907808559" duration="10685000" />
       <workItem from="1458257075326" duration="6940000" />
-      <workItem from="1458696215426" duration="7895000" />
+      <workItem from="1458696215426" duration="10917000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="160326000" />
+    <option name="totallyTimeSpent" value="163348000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="1085" extended-state="6" />
@@ -725,31 +718,31 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>449</line>
+          <line>483</line>
           <properties />
           <option name="timeStamp" value="51" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>355</line>
+          <line>389</line>
           <properties />
           <option name="timeStamp" value="88" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>246</line>
+          <line>243</line>
           <properties />
           <option name="timeStamp" value="89" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>576</line>
+          <line>610</line>
           <properties />
           <option name="timeStamp" value="92" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/csc560/pa1server/Server.java</url>
-          <line>517</line>
+          <line>551</line>
           <properties />
           <option name="timeStamp" value="94" />
         </line-breakpoint>
@@ -772,7 +765,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -794,7 +788,8 @@
           <caret line="350" column="6" selection-start-line="350" selection-start-column="6" selection-end-line="356" selection-end-column="9" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -816,7 +811,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -838,7 +834,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -860,7 +857,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -882,7 +880,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -904,7 +903,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -926,7 +926,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -948,7 +949,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -970,7 +972,8 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1019,25 +1022,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.022354694">
           <caret line="73" column="22" selection-start-line="73" selection-start-column="22" selection-end-line="73" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_72.jdk/Contents/Home/src.zip!/java/util/Properties.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="460" column="0" selection-start-line="460" selection-start-column="0" selection-end-line="460" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#48692#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#4787#4788#0" expanded="false" />
-            <element signature="e#4813#4814#0" expanded="false" />
-            <element signature="e#4990#4991#0" expanded="false" />
-            <element signature="e#5030#5031#0" expanded="false" />
-            <element signature="e#5711#5712#0" expanded="false" />
-            <element signature="e#5749#5750#0" expanded="false" />
-            <element signature="e#44871#44872#0" expanded="false" />
-            <element signature="e#44918#44919#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1060,13 +1045,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_72.jdk/Contents/Home/src.zip!/java/util/Properties.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="460" column="0" selection-start-line="460" selection-start-column="0" selection-end-line="460" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/csc560/pa1server/Server.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.64828616">
-          <caret line="238" column="38" selection-start-line="238" selection-start-column="38" selection-end-line="238" selection-end-column="38" />
+        <state vertical-scroll-proportion="2.433681">
+          <caret line="289" column="17" selection-start-line="289" selection-start-column="17" selection-end-line="289" selection-end-column="17" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="class#BoardSpace#0;class#Server#0" expanded="false" />
+            <element signature="e#5056#5057#0" expanded="true" />
+            <element signature="e#5100#5101#0" expanded="true" />
           </folding>
         </state>
       </provider>
