@@ -1,1 +1,4 @@
 Starting new game
+Starting new game
+MOVE 1 2 LOSS
+Starting new game

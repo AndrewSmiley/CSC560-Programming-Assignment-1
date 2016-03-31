@@ -49,49 +49,6 @@ public class Server {
 
     }
 
-
-//    public class ServerThread implements Runnable {
-//
-//
-//        @Override
-//        public void run() {
-//            //we need this part to start the server
-//            ServerSocket listener = null;
-//            try {
-//                listener = new ServerSocket(7788);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            System.out.println("Listening for new connecitons... ");
-//            int numThreads = 1;
-//            while (true) {
-//
-//                Socket throwAway = null;
-//                try {
-//                    throwAway = listener.accept();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                if (throwAway != null) {
-//
-//                    //ok so this should be the easy fix.
-//                    //just spawn a new thread each time we get a new connection
-//                    //we can get rid of this lock stuff though.
-//                    Thread t = new Thread(new ServerGame(throwAway));
-//                    t.setName("Game Thread "+numThreads);
-//                    t.start();
-//                    numThreads++;
-////                    connections.add(throwAway);
-//                    System.out.println("Accepted new connection and started new game");
-////                    System.out.println("Size of connections after: "+ connections.size());
-////                    lock = false;
-//                    //exit CS
-//                }
-//            }
-//        }
-//    }
-
     void wait(boolean semaphore){
         semaphore = true;
     }
@@ -222,21 +179,28 @@ public class Server {
                         int[][] board = buildNewBoard();
                         out = new ObjectOutputStream(connection.getOutputStream());
                         out.flush();
+                //Sending the response back to the client.
+                        OutputStream os = connection.getOutputStream();
 
-                        if (!serverTurn) {
-                            sendMessage("NONE");
+                if (!serverTurn) {
+                            sendMessage("NONE",os);
                         } else {
-                            executeServerMove(board, counter, outWriter);
+                            executeServerMove(board, counter, outWriter,os);
                         }
+
+//                        String number = br.readLine();
                         in = new ObjectInputStream(connection.getInputStream());
                         while (gameRunning) {
                             //just each time through check for a new conneciton
 //                      acceptNonBlockingConnection(connections, ssc);
-                            if (processMove((String) in.readObject(), board, CLIENT_ID, counter, outWriter)) {
+                            InputStream is = connection.getInputStream();
+                            InputStreamReader isr = new InputStreamReader(is);
+                            BufferedReader br = new BufferedReader(isr);
+                            if (processMove(br.readLine(), board, CLIENT_ID, counter, outWriter,os)) {
                                 break;
                             }
 //                      acceptNonBlockingConnection(connections, ssc);
-                            if (executeServerMove(board,counter, outWriter)) {
+                            if (executeServerMove(board,counter, outWriter,os)) {
                                 break;
                             }
 //                      acceptNonBlockingConnection(connections, ssc);
@@ -257,7 +221,7 @@ public class Server {
 
     public void spawnNewGame(Socket s) {
         Thread t = new Thread(new ServerGame(s));
-//        t.setName("Game Thread "+numThreads);
+
         t.start();
     }
     public static void main(String args[]) {
@@ -297,22 +261,7 @@ public class Server {
     }
     }
 
-//    void doShit(){
-//        Thread t = new Thread (new ServerThread());
-//        t.start();
-//    }
-    void acceptNonBlockingConnection(LinkedList<SocketChannel> connections, ServerSocketChannel ssc) {
-        SocketChannel throwAway = null;
-        try {
-            throwAway = ssc.accept();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (throwAway != null) {
-            connections.add(throwAway);
-            System.out.println("Accepted new connection and added to queue.");
-        }
-    }
+
 
     void printStatistics(Counter counter){
         while(counterSemaphore){
@@ -322,90 +271,7 @@ public class Server {
         System.out.println("\nWins: "+counter.getWins()+"\nLosses: "+counter.getLosses()+"\nTies: "+counter.getTies());
         signal(counterSemaphore);
     }
-//    void run() {
-//        Counter counter = new Counter();
-//        //start the thread
-//        Thread t = new Thread(new ServerThread());
-//        t.start();
-//        while (true) {
-//            try {
-////              System.out.println("Waiting for connection");
-//                while (true) {
-//                    printStatistics(counter);
-//                    SocketChannel sc = null;
-//                    while (connections.size() < 1) {
-////                        System.out.println("No connections available... zzzz....");
-//                        Thread.sleep(1000);
-//                    }
-//                    if (lock) {
-//                        //wait till hte other thread exits CS
-//                        while (lock) {
-//                            ;
-//                        }
-//                    } else {
-//                        //enter the CS
-//                        lock = true;
-//                        sc = connections.pop();
-//                        System.out.println("Grabbed connection from Queue");
-//                        lock = false;
-//                    }
-////                  if (connections.size() == 0) {
-////                      //if we don't have any queued connections
-////                      sc = ssc.accept();
-////                      //if it's null, we want to wait till we get an incoming conneciton
-////                      if(sc == null){
-////                          while (sc == null){
-////                              Thread.sleep(2000);
-////                              sc= ssc.accept();
-////                              System.out.println((sc == null) ? "Waiting for connection": "Accepted new incoming connection");
-////                          }
-////                      }
-////                  }else{
-////                      //otherwise grab it off the queue
-////                      sc = connections.pop();
-////                      System.out.println("Grabbed connection from Queue");
-////
-////                  }
-//                    boolean gameRunning = true;
-//                    Socket connection = sc.socket();
-//                    System.out.println("Connection received from " + connection.getInetAddress().getHostName());
-////                  acceptNonBlockingConnection(connections, ssc);
-//                    Random rand = new Random();
-//                    int randomNum = rand.nextInt((100 - 1) + 1) + 1;
-//                    //if it's an even number let the server move first, otherwise let the client go first
-//                    boolean serverTurn = randomNum % 2 == 0;
-//                    int[][] board = buildNewBoard();
-//                    out = new ObjectOutputStream(connection.getOutputStream());
-//                    out.flush();
-//
-//                    if (!serverTurn) {
-//                        sendMessage("NONE");
-//                    } else {
-//                        executeServerMove(board, counter);
-//                    }
-//                    in = new ObjectInputStream(connection.getInputStream());
-//                    while (gameRunning) {
-//                        //just each time through check for a new conneciton
-////                      acceptNonBlockingConnection(connections, ssc);
-//                        if (processMove((String) in.readObject(), board, CLIENT_ID, counter)) {
-//                            break;
-//                        }
-////                      acceptNonBlockingConnection(connections, ssc);
-//                        if (executeServerMove(board,counter)) {
-//                            break;
-//                        }
-////                      acceptNonBlockingConnection(connections, ssc);
-//                        if (generateGameState(board).size() == 0) {
-//                            gameRunning = false;
-//                        }
-//                    }
-//                }
-//            } catch (Exception ioException) {
-//                ioException.printStackTrace();
-//
-//            }
-//        }
-//    }
+
 
     ArrayList<BoardSpace> boardArrayToArrayList(int[][] board) {
         ArrayList<BoardSpace> b = new ArrayList<BoardSpace>();
@@ -493,11 +359,19 @@ public class Server {
         return "";
     }
 
-    void sendMessage(String msg) {
+    void sendMessage(String msg, OutputStream os) {
         try {
+
+            //Sending the response back to the client.
+//            OutputStream os = socket.getOutputStream();
+            OutputStreamWriter osw = new OutputStreamWriter(os);
+            BufferedWriter bw = new BufferedWriter(osw);
+            bw.write(msg);
+//            System.out.println("Message sent to the client is "+msg);
+            bw.flush();
             System.out.println(msg);
-            out.writeObject(msg);
-            out.flush();
+//            out.writeOb?ject(msg);
+//            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -506,23 +380,7 @@ public class Server {
     }
 
 
-    void printBoard(int[][] board) {
-        for (int i = 0; i < 3; i++) {
-            String row = "";
-            for (int j = 0; j < 3; j++) {
-                if (board[i][j] == 0) {
-                    row = row + "| |";
-                } else if (board[i][j] == CLIENT_ID) {
-                    row = row + "|O|";
-                } else if (board[i][j] == SERVER_ID) {
-                    row = row + "|X|";
-                }
 
-            }
-            System.out.println(row + "\n\n");
-        }
-        System.out.println("\n\n");
-    }
 
     int[][] buildNewBoard() {
         return new int[3][3];
@@ -536,7 +394,7 @@ public class Server {
      * @param player
      * @return
      */
-    boolean processMove(String move, int[][] board, int player, Counter counter, PrintWriter fuck) {
+    boolean processMove(String move, int[][] board, int player, Counter counter, PrintWriter fuck, OutputStream os) {
         String[] tmp = move.split(" ");
         try {
             int row = Integer.parseInt(tmp[1]);
@@ -547,7 +405,7 @@ public class Server {
 
                 if (generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW) {
                     String message = "MOVE " + row + " " + column + " " + getEndGameMessageAction(determineWinner(board));
-                    sendMessage(message);
+                    sendMessage(message,os);
                     fuck.println(message);
                     while(counterSemaphore){
                         ;
@@ -599,13 +457,13 @@ public class Server {
      * @param board the current board state
      * @return boolean wheter the game neded nor not
      */
-    boolean executeServerMove(int[][] board,Counter counter, PrintWriter fuck) {
+    boolean executeServerMove(int[][] board,Counter counter, PrintWriter fuck, OutputStream os) {
         BoardSpace space = minimax(0, SERVER_ID, board);
         System.out.println("Chose move with value " + space.getTotalScore() + " at position " + space.getRow() + " " + space.getColumn());
         board[space.row][space.column] = SERVER_ID;
         if (generateGameState(board).size() == 0 || determineWinner(board) != EMPTY_ROW) {
             String message = "MOVE " + space.row + " " + space.column + " " + getEndGameMessageAction(determineWinner(board));
-            sendMessage(message);
+            sendMessage(message, os);
             fuck.println(message);
             //so now we enter the CS
             while(counterSemaphore){
@@ -622,7 +480,7 @@ public class Server {
             signal(counterSemaphore);
             return true;
         } else {
-            sendMessage("MOVE " + space.row + " " + space.column);
+            sendMessage("MOVE " + space.row + " " + space.column,os);
             return false;
         }
 
@@ -669,9 +527,7 @@ public class Server {
         if (possibleMoves.size() == 1) {
             int[][] tmpBoard = fuckYouJavaCopyBoard(board);
             tmpBoard[possibleMoves.get(0).row][possibleMoves.get(0).column] = player;
-//            System.out.println("Final state reached\n\n");
-//            printBoard(tmpBoard);
-//            System.out.println("Final state reached\n\n");
+
             int winner = determineWinner(tmpBoard);
             if (winner == player) {
                 return depth - 10;

@@ -108,10 +108,14 @@ public class Client{
                 System.out.println("Current thread name: " + name);
 
                 out = new ObjectOutputStream(requestSocket.getOutputStream());
-                in = new ObjectInputStream(requestSocket.getInputStream());
+                InputStream is = requestSocket.getInputStream();
+//                InputStreamReader isr = new InputStreamReader(is);
+//                BufferedReader br = new BufferedReader(isr);
+//                String number = br.readLine();
+//                in = new ObjectInputStream(requestSocket.getInputStream());
 
                 //get the initial message
-                String initialMessage =readIncomingMessage(in);
+                String initialMessage =readIncomingMessage(is);
 
                 outWriter.println(initialMessage);
                 if (initialMessage.equalsIgnoreCase("NONE")){
@@ -144,7 +148,7 @@ public class Client{
                     System.out.println("begin looping");
                     disableEnableAllNonUsedButtons(board, false);
 
-                    message = readIncomingMessage(in);
+                    message = readIncomingMessage(is);
                     outWriter.println(message);
                     if (message.contains("WIN") || message.contains("LOSS") || message.contains("TIE")){
                         processEndOfGame(message);
@@ -190,19 +194,18 @@ public class Client{
 
         /**
          * Read an incoming message to a string
-         * @param in
+//         * @param in
          * @return
          */
-        String readIncomingMessage(ObjectInputStream in){
-            try {
-                return (String) in.readObject();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+        String readIncomingMessage(InputStream is){
+            //                InputStream is = socket.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String number = br.lines().toString();
 
-            return "";
+            return number;
+
+//            return "";
 
         }
 
@@ -211,10 +214,10 @@ public class Client{
          * @param board
          * @param space
          */
-        void processClientAction(int[][] board, BoardSpace space){
+        void processClientAction(int[][] board, BoardSpace space, OutputStream os){
 //        BoardSpace space = getUserInput();
             board[space.row][space.column]= CLIENT_ID;
-            sendMessage("MOVE "+space.row+" "+space.column);
+            sendMessage("MOVE "+space.row+" "+space.column, os);
             shouldWaitForUserInput = false;
         }
 
@@ -274,13 +277,19 @@ public class Client{
          * Send a message to the server
          * @param msg
          */
-        void sendMessage(String msg)
-        {
-
+        void sendMessage(String msg, OutputStream os) {
             try {
+
+                //Sending the response back to the client.
+//            OutputStream os = socket.getOutputStream();
+                OutputStreamWriter osw = new OutputStreamWriter(os);
+                BufferedWriter bw = new BufferedWriter(osw);
+                bw.write(msg);
+//            System.out.println("Message sent to the client is "+msg);
+                bw.flush();
                 System.out.println(msg);
-                out.writeObject(msg);
-                out.flush();
+//            out.writeOb?ject(msg);
+//            out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -318,8 +327,19 @@ public class Client{
                     Thread t = Thread.currentThread();
                     String name = t.getName();
                     System.out.println("Current thread name: " + name);
-
-                    processClientAction(board, new BoardSpace(row, col));
+                    //Sending the response back to the client.
+                    OutputStream os = null;
+                    try {
+                        os = requestSocket.getOutputStream();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+//                    ?OutputStreamWriter osw = new OutputStreamWriter(os);
+//                    BufferedWriter bw = new BufferedWriter(osw);
+//                    bw.write(returnMessage);
+//                    System.out.println("Message sent to the client is "+returnMessage);
+//                    bw.flush();
+                    processClientAction(board, new BoardSpace(row, col), os);
                 }
             });
             return b;
