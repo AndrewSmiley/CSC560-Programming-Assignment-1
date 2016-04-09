@@ -141,6 +141,7 @@ public class TestServer {
                             ties ++;
                             semaphore = false;
                         }
+                        printStats();
                         break;
                     }
                 }
@@ -158,9 +159,11 @@ public class TestServer {
         }
         //aquire lock
         semaphore = true;
+        System.out.println("Statistics");
         System.out.println("Wins: "+wins);
         System.out.println("Losses: "+losses);
         System.out.println("Ties: "+ties);
+        System.out.println("\n\n");
         semaphore = false;
 
     }

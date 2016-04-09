@@ -3,6 +3,7 @@ package csc560;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -30,7 +31,7 @@ public class TestClient {
             String move = recieveMessage(in);
             //if user makes the first move
             if(move.contains("NONE")){
-                move = getUserMove();
+                move = getUserMove(board);
                 sendMessage(out,move);
                 //just keep an eye on the board
                 processMove(board, move, clientid);
@@ -43,7 +44,7 @@ public class TestClient {
                 System.out.println("Server Turn");
                 printBoard(board);
                 //now we get the user move
-                move = getUserMove();
+                move = getUserMove(board);
                 sendMessage(out,move);
                 //just keep an eye on the board
                 processMove(board, move, clientid);
@@ -68,7 +69,7 @@ public class TestClient {
                 printBoard(board);
 
                 //now we get the user move
-                move = getUserMove();
+                move = getUserMove(board);
                 sendMessage(out,move);
                 //just keep an eye on the board
                 processMove(board, move, clientid);
@@ -79,6 +80,23 @@ public class TestClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * for the automation testing
+     * @param board
+     * @return
+     */
+    public ArrayList<String> getAvailableMoves(int[][] board){
+        ArrayList<String> moves = new ArrayList<String>();
+        for (int i =0; i < 3; i++){
+            for(int j = 0; j < 3; j++){
+                if(board[i][j] == 0){
+                    moves.add("MOVE "+i+" "+j);
+                }
+            }
+        }
+        return moves;
     }
 
     public void printBoard(int[][] board){
@@ -96,17 +114,19 @@ public class TestClient {
         }
         System.out.println("\n");
     }
-    public String getUserMove(){
-        System.out.println("Your Turn");
-        Scanner reader = new Scanner(System.in);  // Reading from System.in
-        System.out.print("Enter a the row: ");
-        int r = reader.nextInt();
-        System.out.print("Enter a the column: ");
-        int c = reader.nextInt();
+    public String getUserMove(int[][] board){
+        System.out.println("Your Turn (but it's automated");
+//        Scanner reader = new Scanner(System.in);  // Reading from System.in
+//        System.out.print("Enter a the row: ");
+//        int r = reader.nextInt();
+//        System.out.print("Enter a the column: ");
+//        int c = reader.nextInt();
+        int random = new Random().nextInt(getAvailableMoves(board).size());
+        return getAvailableMoves(board).get(random);
 
 
 
-        return "MOVE "+r+" "+c;
+//        return "MOVE "+r+" "+c;
     }
     public void sendMessage(PrintWriter out, String message){
         out.println(message);
