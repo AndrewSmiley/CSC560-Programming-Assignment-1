@@ -20,8 +20,8 @@ public class Client{
     public static class BoardGUI {
 
         Socket requestSocket;
-        ObjectOutputStream out;
-        ObjectInputStream in;
+        PrintWriter out;
+        BufferedReader in;
         String message;
         int CLIENT_ID = 666;
         int SERVER_ID = 777;
@@ -107,8 +107,10 @@ public class Client{
                 String name = t.getName();
                 System.out.println("Current thread name: " + name);
 
-                out = new ObjectOutputStream(requestSocket.getOutputStream());
-                in = new ObjectInputStream(requestSocket.getInputStream());
+                out = new PrintWriter(requestSocket.getOutputStream(),
+                        true);
+                in = new BufferedReader(new InputStreamReader(
+                        requestSocket.getInputStream()));
 
                 //get the initial message
                 String initialMessage =readIncomingMessage(in);
@@ -176,8 +178,8 @@ public class Client{
             } finally{
                 //4: Closing connection
                 try{
-                    in.close();
-                    out.close();
+//                    in.close();
+//                    out.close();
                     requestSocket.close();
                     outWriter.close();
                 }
@@ -193,12 +195,10 @@ public class Client{
          * @param in
          * @return
          */
-        String readIncomingMessage(ObjectInputStream in){
+        String readIncomingMessage(BufferedReader in){
             try {
-                return (String) in.readObject();
+                return in.readLine();
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
 
@@ -277,13 +277,8 @@ public class Client{
         void sendMessage(String msg)
         {
 
-            try {
-                System.out.println(msg);
-                out.writeObject(msg);
-                out.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println(msg);
+            out.println(msg);
 
 
         }

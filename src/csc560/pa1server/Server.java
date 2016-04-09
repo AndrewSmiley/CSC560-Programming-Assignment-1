@@ -101,8 +101,8 @@ public class Server {
 
     static volatile boolean counterSemaphore = false;
     ServerSocket providerSocket;
-    ObjectOutputStream out;
-    ObjectInputStream in;
+    PrintWriter out;
+    BufferedReader in;
     final int BOARD_ROWS = 3;
     final int BOARD_COLUMNS = 3;
     final int DEFAULTWEIGHT = 0;
@@ -220,19 +220,20 @@ public class Server {
                         //if it's an even number let the server move first, otherwise let the client go first
                         boolean serverTurn = randomNum % 2 == 0;
                         int[][] board = buildNewBoard();
-                        out = new ObjectOutputStream(connection.getOutputStream());
-                        out.flush();
+                        out = new PrintWriter(connection.getOutputStream(),
+                        true);
 
                         if (!serverTurn) {
                             sendMessage("NONE");
                         } else {
                             executeServerMove(board, counter, outWriter);
                         }
-                        in = new ObjectInputStream(connection.getInputStream());
+                        in = new BufferedReader(new InputStreamReader(
+                                connection.getInputStream()));
                         while (gameRunning) {
                             //just each time through check for a new conneciton
 //                      acceptNonBlockingConnection(connections, ssc);
-                            if (processMove((String) in.readObject(), board, CLIENT_ID, counter, outWriter)) {
+                            if (processMove((String) in.readLine(), board, CLIENT_ID, counter, outWriter)) {
                                 break;
                             }
 //                      acceptNonBlockingConnection(connections, ssc);
@@ -493,14 +494,9 @@ public class Server {
         return "";
     }
 
-    void sendMessage(String msg) {
-        try {
-            System.out.println(msg);
-            out.writeObject(msg);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    void    sendMessage(String msg) {
+        System.out.println(msg);
+        out.println(msg);
 
 
     }

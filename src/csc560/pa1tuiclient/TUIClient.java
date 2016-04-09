@@ -99,55 +99,53 @@ public class TUIClient {
             InetAddress address = InetAddress.getByName(host);
             socket = new Socket(address, port);
             System.out.println("Connected.");
-            while(true){
-                //send a message to the server
-            }
-//            int[][] board = new int[3][3];
-//            boolean gameOn = true;
-//            String message = tc.recieveMessage(socket);
-//            //we make the first move
-//            if (message.contains("NONE")){
-//                String move = tc.getUserMove();
-//                tc.sendMessage("MOVE "+move.substring(0,1)+" "+move.substring(1,2), socket);
-//                board[Integer.parseInt(move.substring(0,1))][Integer.parseInt(move.substring(1,2))] = tc.CLIENT_ID;
-//
-//            }else{
-////                String move = tc.recieveMessage(socket);
-//                String[] tmp = message.split(" ");
-//                int row = Integer.parseInt(tmp[1]);
-//                int column = Integer.parseInt(tmp[2]);
-//                board[row][column] = tc.SERVER_ID;
-//                String move = tc.getUserMove();
-//                tc.sendMessage("MOVE "+move.substring(0,1)+" "+move.substring(1,2), socket);
-//                board[Integer.parseInt(move.substring(0,1))][Integer.parseInt(move.substring(1,2))] = tc.CLIENT_ID;
-//
-//            }
-//            while (gameOn){
+
+            int[][] board = new int[3][3];
+            boolean gameOn = true;
+            String message = tc.recieveMessage(socket);
+            //we make the first move
+            if (message.contains("NONE")){
+                String move = tc.getUserMove();
+                tc.sendMessage("MOVE "+move.substring(0,1)+" "+move.substring(1,2), socket);
+                board[Integer.parseInt(move.substring(0,1))][Integer.parseInt(move.substring(1,2))] = tc.CLIENT_ID;
+
+            }else{
 //                String move = tc.recieveMessage(socket);
-//                while(move.equalsIgnoreCase("")){
-//                    Thread.sleep(1000);
-//                    move = tc.recieveMessage(socket);
-//                }
-//                if(message.contains("WIN")){
-//                    break;
-//                }
-//                //we make the first move
-//
-////                String move = tc.recieveMessage(socket);
-//                String[] tmp = move.split(" ");
-//                int row = Integer.parseInt(tmp[1]);
-//                int column = Integer.parseInt(tmp[2]);
-//                board[row][column] = tc.SERVER_ID;
-//
-//                move = tc.getUserMove();
-//                tc.sendMessage("MOVE "+move.substring(0,1)+" "+move.substring(1,2), socket);
-//                board[Integer.parseInt(move.substring(0,1))][Integer.parseInt(move.substring(1,2))] = tc.CLIENT_ID;
-//
-//
-//
-//
-//
-//            }
+                String[] tmp = message.split(" ");
+                int row = Integer.parseInt(tmp[1]);
+                int column = Integer.parseInt(tmp[2]);
+                board[row][column] = tc.SERVER_ID;
+                String move = tc.getUserMove();
+                tc.sendMessage("MOVE "+move.substring(0,1)+" "+move.substring(1,2), socket);
+                board[Integer.parseInt(move.substring(0,1))][Integer.parseInt(move.substring(1,2))] = tc.CLIENT_ID;
+
+            }
+            while (gameOn){
+                String move = tc.recieveMessage(socket);
+                while(move.equalsIgnoreCase("")){
+                    Thread.sleep(1000);
+                    move = tc.recieveMessage(socket);
+                }
+                if(message.contains("WIN")){
+                    break;
+                }
+                //we make the first move
+
+//                String move = tc.recieveMessage(socket);
+                String[] tmp = move.split(" ");
+                int row = Integer.parseInt(tmp[1]);
+                int column = Integer.parseInt(tmp[2]);
+                board[row][column] = tc.SERVER_ID;
+
+                move = tc.getUserMove();
+                tc.sendMessage("MOVE "+move.substring(0,1)+" "+move.substring(1,2), socket);
+                board[Integer.parseInt(move.substring(0,1))][Integer.parseInt(move.substring(1,2))] = tc.CLIENT_ID;
+
+
+
+
+
+            }
 
 
 

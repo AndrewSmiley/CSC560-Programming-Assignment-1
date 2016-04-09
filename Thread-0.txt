@@ -1,1 +1,4 @@
 Starting new game
+Starting new game
+Starting new game
+MOVE 2 1 TIE
